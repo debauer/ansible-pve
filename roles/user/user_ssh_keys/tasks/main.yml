@@ -1,0 +1,16 @@
+---
+- name: Include_tasks for_user
+  ansible.builtin.include_tasks: for_user.yml
+  vars:
+    user_ssh: "{{ user_config.ssh }}"
+    user_name: "{{ user_config.name }}"
+    user_folder: /home/{{ user_config.name }}
+    user_pub_keys: "{{ user_config.authorized_keys }}"
+  loop_control:
+    loop_var: user_config
+  with_items: "{{ users }}"
+  when:
+    - users is defined
+    - user_config.name != "root"
+    - user_config.authorized_keys is defined
+    - user_config.authorized_keys is truthy

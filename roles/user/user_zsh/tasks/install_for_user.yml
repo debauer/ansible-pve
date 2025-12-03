@@ -1,0 +1,78 @@
+---
+- name: Create user
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    home: "{{ user_folder }}"
+    shell: /bin/zsh
+    state: present
+  become: true
+  when: user_name != "root"
+  failed_when: false
+
+- name: Setup git repo
+  ansible.builtin.git:
+    repo: https://github.com/debauer/dotfiles
+    dest: "{{ user_folder }}/.dotfiles"
+    force: true
+    version: main
+  become: true
+  become_user: "{{ user_name }}"
+
+- name: Check if oh-my-zsh is installed
+  ansible.builtin.stat:
+    path: "{{ user_folder }}/.oh-my-zsh"
+  become: true
+  register: ohmyzsh_stat
+
+- name: Print ohmyzsh_stat
+  ansible.builtin.debug:
+    var: ohmyzsh_stat
+
+- name: Install oh-my-zsh
+  ansible.builtin.script:
+    cmd: files/ohmyzsh.sh
+  become: true
+  become_user: "{{ user_name }}"
+  when: not ohmyzsh_stat.stat.exists
+
+- name: Setup oh-my-zsh plugins
+  ansible.builtin.include_tasks: install_git_repo.yml
+  vars:
+    git_repo: "{{ repo_path }}"
+  loop_control:
+    loop_var: repo_path
+  with_items:
+    - https://github.com/zsh-users/zsh-history-substring-search
+    - https://github.com/zsh-users/zsh-syntax-highlighting
+    - https://github.com/zsh-users/zsh-autosuggestions
+    - https://github.com/MichaelAquilina/zsh-you-should-use
+    - https://github.com/marlonrichert/zsh-autocomplete
+
+- name: Setup powerlevel10k
+  ansible.builtin.git:
+    repo: https://github.com/romkatv/powerlevel10k
+    dest: "{{ user_folder }}/.oh-my-zsh/custom/themes/powerlevel10k"
+    force: true
+  become: true
+  become_user: "{{ user_name }}"
+
+- name: Include_tasks remove_files
+  ansible.builtin.include_tasks: remove_files.yml
+  vars:
+    user: "{{ file_name }}"
+  loop_control:
+    loop_var: file_name
+  with_items:
+    - .config/atuin
+    - .zshrc
+    - .profile
+    - .bashrc
+
+- name: Stow shell configs
+  ansible.builtin.command:
+    cmd: "stow shell"
+    chdir: "{{ user_folder }}/.dotfiles"
+  become: true
+  become_user: "{{ user_name }}"
+  register: stowout
+  changed_when: "'LINK' in stowout.stderr"

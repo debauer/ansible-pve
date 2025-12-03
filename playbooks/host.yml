@@ -1,0 +1,46 @@
+---
+- name: Cloud
+  hosts: pve
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Basic roles
+      tags: basic
+      block:
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/basic_setup
+
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/update
+          when:
+            - update_system is defined
+            - update_system is truthy
+
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/packages
+
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/user/user_add
+          when: users is defined
+
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/user/user_secure
+          when: users is defined
+
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/user/user_ssh_keys
+          when: users is defined
+
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/user/user_shell
+          when:
+            - user_zsh is defined
+            - user_zsh is truthy

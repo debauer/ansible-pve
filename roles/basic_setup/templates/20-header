@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo "\033[1;31m$(figlet $(hostname) -f /root/font/doom.flf)\033[0;37m"

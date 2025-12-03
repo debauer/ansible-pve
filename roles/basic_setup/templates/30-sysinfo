@@ -1,0 +1,19 @@
+#!/bin/bash
+
+cpuallusage=`ps aux | awk {'sum+=$3;print sum'} | tail -n 1 | awk '{printf "%.0f\n", $1}'`
+cpucores=`cat /proc/cpuinfo | grep "model name" | wc -l`
+cpuusage=$((cpuallusage / cpucores))
+
+# \033[0;34m+     \033[0;37mCPU usage \033[0;34m= \033[1;32m$cpuusage%
+
+echo -e "\033[0;34m+++++++++++++++++: \033[0;37mSystem Data\033[0;34m :+++++++++++++++++++++++++++++
+\033[0;34m+ \033[0;37mDate and Time \033[0;34m= \033[1;32m`date`
+\033[0;34m+        \033[0;37mKernel \033[0;34m= \033[1;32m`uname -r`
+\033[0;34m+        \033[0;37mUptime \033[0;34m= \033[1;32m`uptime | grep -ohe 'up .*' | sed 's/,//g' | awk '{ printf $2" "$3 }'`
+\033[0;34m+          \033[0;37mLoad \033[0;34m= \033[1;32m`cat /proc/loadavg | awk '{print $1}'` `cat /proc/loadavg | awk '{print $2}'` `cat  /proc/loadavg | awk '{print $3}'`
+\033[0;34m+     \033[0;37mCPU model \033[0;34m= \033[1;32m$cpucores x `cat /proc/cpuinfo | grep -m 1 "model name" | awk -F ": " '{print $2}'`
+\033[0;34m+        \033[0;37mMemory \033[0;34m= \033[1;32mUsed `free -m | head -n 2 | tail -n 1 | awk {'print $3'}` MB out of `free -m | head -n 2 | tail -n 1 | awk {'print $2'}` MB
+\033[0;34m+           \033[0;37mHDD \033[0;34m= \033[1;32mUsed `df -h / | tail -n 1 | awk {'print $3'}` out of `df -h / | tail -n 1 | awk {'print $2'}`
+\033[0;34m+     \033[0;37mProcesses \033[0;34m= \033[1;32m`ps aux | wc -l` of `ulimit -u` MAX
+\033[0;34m+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\033[0;37m
+"

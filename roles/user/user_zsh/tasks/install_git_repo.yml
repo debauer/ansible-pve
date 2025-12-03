@@ -1,0 +1,14 @@
+---
+- name: Check if file exist
+  ansible.builtin.stat:
+    path: "{{ user_folder }}/{{ git_repo }}"
+  register: sym
+
+- name: Setup oh-my-zsh plugins {{ git_repo }}
+  ansible.builtin.git:
+    repo: "{{ git_repo }}"
+    dest: "{{ user_folder }}/.oh-my-zsh/custom/plugins/{{ git_repo | split('/') | last }}"
+    force: true
+  become: true
+  become_user: "{{ user_name }}"
+  when: not sym.stat.exists or (zsh_update is defined and zsh_update)

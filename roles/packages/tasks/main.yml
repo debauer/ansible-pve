@@ -1,0 +1,17 @@
+---
+- name: Install Packages
+  when:
+    - ansible_facts['os_family'] == "Archlinux" or ansible_facts['os_family'] == "Debian"
+
+  block:
+    - name: Install common packages
+      ansible.builtin.package:
+        name: "{{ packages_common }}"
+        state: present
+      when: packages_common is truthy
+
+    - name: Install additinal packages
+      ansible.builtin.package:
+        name: "{{ packages_additional }}"
+        state: present
+      when: packages_additional is truthy

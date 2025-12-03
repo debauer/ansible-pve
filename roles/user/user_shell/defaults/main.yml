@@ -1,0 +1,13 @@
+---
+user_shell_copy_files_to_root:
+  - { file: "root/bashrc", target: ".bashrc" }
+  - { file: "root/zshrc", target: ".zshrc" }
+  - { file: "root/Taskfile.yml", target: "Taskfile.yml" }
+  - { file: "root/atuin_config.toml", target: ".config/atuin/config.toml" }
+  - { file: "screenrc", target: ".screenrc" }
+
+user_shell_copy_files_to_user:
+  - { file: "systemwide/bashrc", target: ".bashrc" }
+  - { file: "systemwide/zshrc", target: ".zshrc" }
+  - { file: "systemwide/Taskfile.yml", target: "Taskfile.yml" }
+  - { file: "screenrc", target: ".screenrc" }

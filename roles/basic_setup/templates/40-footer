@@ -1,0 +1,5 @@
+#!/bin/sh
+{% if location is defined %}
+echo "\033[1;31mLocation of Hardware: {{location}}\033[0;37m"
+{% endif %}
+echo "\033[1;31mLast Update via Ansible: {{now()}}\033[0;37m"

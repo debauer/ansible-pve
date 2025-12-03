@@ -1,0 +1,29 @@
+---
+- name: Disable Password Authentication
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+    backup: "yes"
+  notify: Restart sshd
+  when:
+    - ansible_facts['os_family'] == "Archlinux"
+
+- name: Disable Password Authentication
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+    backup: "yes"
+  notify: Restart ssh
+  when:
+    - ansible_facts['os_family'] == "Debian"
+
+- name: Let user sudo without Password
+  ansible.builtin.template:
+    src: "nopasswd.j2"
+    dest: "/etc/sudoers.d/nopasswd"
+    mode: "0644"
+  when: user_sudo_without_password

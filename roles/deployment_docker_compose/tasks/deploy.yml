@@ -1,0 +1,57 @@
+---
+- name: "Create deployment target folder | {{ config.name }}"
+  ansible.builtin.file:
+    path: "{{ config.target_folder }}"
+    state: directory
+    mode: "0775"
+
+- name: "Create additional folders | {{ config.name }}"
+  ansible.builtin.file:
+    path: "{{ config.target_folder }}/{{ item }}"
+    recurse: true
+    state: directory
+    mode: "{{ item.target_folder_mode | default(770) }}"
+  with_items: "{{ config.mkfolder }}"
+  when: config.mkfolder is defined
+  register: folder_changed
+
+- name: "Copy files to target | {{ config.name }}"
+  ansible.builtin.template:
+    src: "{{playbook_dir}}/../{{ deployment_docker_compose_base_path }}/{{ config.name }}/{{ item.src }}"
+    dest: "{{ config.target_folder }}/{{ item.dst | default(item.src) }}"
+    owner: "{{ config.user | default('root') }}"
+    group: "{{ config.user | default('root') }}"
+    mode: "{{ item.file_mode | default(770) }}"
+  become: true
+  with_items: "{{ config.copy_files }}"
+  register: files_changed
+
+- name: Log in
+  community.docker.docker_login:
+    username: "{{ config.registry_login.username }}"
+    password: "{{ config.registry_login.password }}"
+  when:
+    config.registry_login is defined
+  changed_when: False
+
+- name: "Create and start docker compose services | {{ config.name }}"
+  community.docker.docker_compose_v2:
+    project_src: "{{ config.target_folder }}"
+  failed_when: false
+
+- name: Restart container
+  community.docker.docker_compose_v2:
+    project_src: "{{ config.target_folder }}"
+    state: "restarted"
+  when: item.changed
+  with_items:
+    - "{{ folder_changed }}"
+    - "{{ files_changed }}"
+  run_once: true
+
+- name: Log out
+  community.docker.docker_login:
+    state: absent
+  when:
+    config.registry_login is defined
+  changed_when: False

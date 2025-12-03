@@ -1,0 +1,18 @@
+---
+user_sudo_without_password: true
+user_zsh: true
+users:
+  - name: ansible
+    ssh: true
+    shell: "/bin/sh"
+    groups:
+      - "wheel"
+    authorized_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILZIcGOqCoTrLbCg06e3HYHwweskvvdPK+w81LlHmHvM debauer@bauer-t14s"
+  - name: debauer
+    ssh: true
+    groups:
+      - "wheel"
+    shell: "/bin/zsh"
+    authorized_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILZIcGOqCoTrLbCg06e3HYHwweskvvdPK+w81LlHmHvM debauer@bauer-t14s"

@@ -1,0 +1,21 @@
+---
+- name: Print os_family
+  ansible.builtin.debug:
+    var: ansible_facts['os_family']
+
+- name: Update system Archlinux
+  become: true
+  community.general.pacman:
+    update_cache: true
+    upgrade: true
+  when:
+    - ansible_facts['os_family'] == "Archlinux"
+
+- name: Update system Debian based
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name: "*"
+    state: latest
+  when:
+    - ansible_facts['os_family'] == "Debian"

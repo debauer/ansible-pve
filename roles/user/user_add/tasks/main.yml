@@ -1,0 +1,15 @@
+---
+- name: Include_tasks add_user
+  ansible.builtin.include_tasks: add_user.yml
+  vars:
+    user_ssh: "{{ user_config.ssh }}"
+    user_name: "{{ user_config.name }}"
+    user_groups: "{{ user_config.groups }}"
+    user_folder: /home/{{ user_config.name }}
+    user_shell: "{{ user_config.shell | default('/bin/bash') }}"
+  loop_control:
+    loop_var: user_config
+  with_items: "{{ users }}"
+  when:
+    - users is defined
+    - user_config.name != "root"

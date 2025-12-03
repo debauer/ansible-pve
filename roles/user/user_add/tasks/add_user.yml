@@ -1,0 +1,35 @@
+---
+- name: Ensure default groups exists
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ user_default_groups }}"
+  become: true
+
+- name: Ensure group "somegroup" exists
+  ansible.builtin.group:
+    name: "{{ group }}"
+    state: present
+  with_items: "{{ user_groups }}"
+  loop_control:
+    loop_var: group
+  when: user_groups is defined
+  become: true
+
+- name: Create user
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    home: "{{ user_folder }}"
+    shell: "{{ user_shell }}"
+    state: present
+    groups: "{{ user_groups }}"
+    append: true
+  when: user_name != "root"
+  failed_when: false
+  become: true
+
+- name: Make sure homefolder has right owner
+  ansible.builtin.command:
+    cmd: "chown {{ user_name }}:{{ user_name }} {{ user_folder }}"
+  become: true
+  changed_when: false

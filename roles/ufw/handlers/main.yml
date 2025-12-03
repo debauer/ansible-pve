@@ -1,0 +1,7 @@
+---
+# roles/ufw/handlers/main.yml
+
+- name: UFW Restart
+  systemd:
+    name: ufw
+    state: restarted

@@ -1,0 +1,67 @@
+---
+- name: Install figlet
+  ansible.builtin.package:
+    name:
+      - figlet
+    state: present
+
+- name: "Create /etc/update-motd.d/"
+  ansible.builtin.file:
+    path: /etc/update-motd.d/
+    state: directory
+    mode: "0775"
+
+- name: Clear /etc/update-motd.d folder
+  ansible.builtin.command:
+    cmd: find /etc/update-motd.d -mindepth 1 -print -delete
+  changed_when: false
+
+- name: Clear /etc/motd
+  ansible.builtin.command:
+    cmd: echo "" > /etc/motd
+  changed_when: false
+
+- name: "Create /root/font/"
+  ansible.builtin.file:
+    path: /root/font/
+    state: directory
+    mode: "0775"
+
+- name: "Copy fonts to system"
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/root/font/{{ item }}"
+    mode: "0755"
+  with_items:
+    - poison.flf
+    - doom.flf
+
+- name: "copy modt files to host"
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/etc/update-motd.d/{{ item }}"
+    mode: "0755"
+  with_items:
+    - 20-header
+    - 30-sysinfo
+    - 40-footer
+  changed_when: false # timestamp *doooh*
+
+- name: Update motd
+  ansible.builtin.command:
+    cmd: run-parts --lsbsysinit /etc/update-motd.d
+  when:
+    - ansible_facts['os_family'] == "Debian"
+  changed_when: false
+
+#  - name: "ln -s /var/run/motd /etc/motd"
+#    ansible.builtin.file:
+#      src: /var/run/motd
+#      dest: /etc/motd
+#      owner: root
+#      group: root
+#      state: link
+
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname | replace('_','-') }}"

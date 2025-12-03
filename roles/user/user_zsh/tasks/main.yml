@@ -1,0 +1,34 @@
+---
+- name: Install zsh
+  ansible.builtin.package:
+    name:
+      - zsh
+
+- name: Install atuin
+  community.general.snap:
+    name:
+      - atuin
+
+- name: Include_tasks install_for_user
+  ansible.builtin.include_tasks: install_for_user.yml
+  vars:
+    user_name: "{{ user_name_x }}"
+    user_folder: "/home/{{ user_name_x }}"
+  loop_control:
+    loop_var: user_name_x
+  with_items: "{{ zsh_user }}"
+  when:
+    - user_name_x != "root"
+    - zsh_user is defined
+
+- name: Include_tasks install_for_user root
+  ansible.builtin.include_tasks: install_for_user.yml
+  vars:
+    user_name: "{{ user_name_x }}"
+    user_folder: /root
+  loop_control:
+    loop_var: user_name_x
+  with_items: "{{ zsh_user }}"
+  when:
+    - user_name_x == "root"
+    - zsh_user is defined

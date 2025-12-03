@@ -1,0 +1,21 @@
+---
+packages_common:
+  - sudo # proxmox hat kein sudo :-(
+  - htop
+  - iotop
+  - make
+  - wget
+  - curl
+  - git
+  - gzip
+  - unzip
+  - rsync
+  - tree
+packages_additional: []
+packages_remove: []
+packages_pip_install: false
+
+packages_pip_for_users: []
+packages_pip_for_user_additional: []
+packages_pip_for_root: []
+packages_pip_for_root_additional: []

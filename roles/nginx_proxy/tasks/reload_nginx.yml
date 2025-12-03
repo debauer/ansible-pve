@@ -1,0 +1,17 @@
+- name: Nginx reload
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
+  when:
+    - nginx_proxy_deployment == "package"
+  changed_when: false
+
+- name: Nginx reload inside container
+  community.docker.docker_compose_v2_exec:
+    service: nginx
+    command: nginx -s reload
+    project_src: "{{ nginx_proxy_deployment_path }}"
+  register: result
+  when:
+    - nginx_proxy_deployment == "docker"
+  changed_when: false

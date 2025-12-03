@@ -1,0 +1,25 @@
+---
+- name: Make dir .ssh
+  ansible.builtin.file:
+    path: "{{ user_folder }}/.ssh"
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0755"
+  when:
+    - user_ssh is defined
+    - user_ssh
+  become: true
+
+- name: Set up ssh keys
+  ansible.posix.authorized_key:
+    user: "{{ user_name }}"
+    state: present
+    key: "{{ pubkey }}"
+  with_items: "{{ user_pub_keys }}"
+  loop_control:
+    loop_var: pubkey
+  when:
+    - user_ssh is defined
+    - user_pub_keys is defined
+    - user_ssh

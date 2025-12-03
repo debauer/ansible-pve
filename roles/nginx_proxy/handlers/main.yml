@@ -1,0 +1,10 @@
+---
+- name: Nginx restart
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+
+- name: Restart Nginx Container
+  community.docker.docker_compose_v2:
+    project_src: "{{ nginx_proxy_docker_deployment_path }}"
+    state: "restarted"

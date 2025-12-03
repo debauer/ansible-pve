@@ -1,0 +1,13 @@
+---
+- name: Copy files to target | {{ config.name }}
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/etc/gitlab/{{ item }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode | default(600) }}"
+  become: true
+  with_items:
+    - gitlab.rb
+  notify: Gitlab reconfigure
+  when: gitlab_domain is defined

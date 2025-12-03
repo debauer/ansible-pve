@@ -1,0 +1,7 @@
+---
+deployment_docker_compose_base_path: "deployments"
+deployment_docker_compose_docker_networks:
+  - proxy
+
+
+deployment_docker_compose_docker_role: "geerlingguy.docker"

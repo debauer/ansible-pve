@@ -1,0 +1,21 @@
+[project]
+name = "ansible-pve"
+version = "0.1.0"
+description = "pve"
+authors = [
+    {name = "debauer",email = "git@debauer.net"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "ansible-pylibssh (>=1.2.2,<2.0.0)",
+    "ansible-core>=2.18.6",
+    "ansible-lint>=25.9.0",
+]
+
+[tool.uv]
+package = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

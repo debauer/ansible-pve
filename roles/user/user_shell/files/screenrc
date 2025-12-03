@@ -1,0 +1,24 @@
+# general settings
+startup_message off
+vbell off
+bell_msg ""
+altscreen on
+termcapinfo xterm* ti@:te@
+defscrollback 5000
+hardstatus alwayslastline '%{= kw}[%{r} %H %{w}] [%= %{= kw}%-w%{+b r}%n %t%{= kw} %+w%= ]'
+msgwait 1
+shell -$SHELL
+
+
+# bind F? keys
+bindkey -k k2 screen -t user
+bindkey -k k3 prev
+bindkey -k k4 next
+bindkey -k k5 title
+bindkey -k k6 detach
+bindkey -k k7 at \# stuff ^C
+bindkey -k k8 eval quit
+
+# bind page up/down to scrolling
+bindkey "^[[5~" eval 'copy' 'stuff ^b'  # PgUp   | Enter copy/scrollback mode and page up
+bindkey "^[[6~" eval 'copy' 'stuff ^f'  # PgDown | Enter copy/scrollback mode and page down

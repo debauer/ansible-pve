@@ -1,0 +1,88 @@
+---
+- name: Install ZSH
+  ansible.builtin.package:
+    name:
+      - zsh
+      - cargo
+    state: present
+
+- name: Ensure the target directories exist
+  ansible.builtin.file:
+    path: "/root/{{ item.target | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  with_items: "{{ user_shell_copy_files_to_root }}"
+
+- name: Copy files to root home
+  ansible.builtin.copy:
+    src: "files/{{ item.file }}"
+    dest: "/root/{{ item.target }}"
+    owner: root
+    group: root
+    mode: "0644"
+  with_items: "{{ user_shell_copy_files_to_root }}"
+
+- name: Copy files to /etc/skel
+  ansible.builtin.copy:
+    src: "files/{{ item.file }}"
+    dest: "/etc/skel/{{ item.target }}"
+    owner: root
+    group: root
+    mode: "0644"
+  with_items: "{{ user_shell_copy_files_to_user }}"
+
+- name: Return atuin version
+  ansible.builtin.command: atuin --version
+  register: atuin_version_output
+  failed_when: false # Verhindert das Abbrechen bei Fehler
+  changed_when: false
+
+- name: Install atuin if not exist
+  ansible.builtin.include_tasks: atuin.yml
+  when:
+    - atuin_version_output.rc != 0 # install atuin if not exist
+
+- name: Return all home folders
+  ansible.builtin.shell:
+    cmd: set -o pipefail && ls -1 /home || true
+    executable: /bin/bash
+  register: homefolder_list
+  changed_when: false
+
+- name: Update configs for users on server
+  ansible.builtin.include_tasks: user.yml
+  vars:
+    user_name: "{{ user_item }}"
+  loop_control:
+    loop_var: user_item
+  with_items: "{{ homefolder_list.stdout_lines }}"
+
+- name: Check if atuin import was already done
+  ansible.builtin.stat:
+    path: "/root/.atuin_import_done"
+  register: atuin_import_marker
+
+- name: Check if history file exists
+  ansible.builtin.stat:
+    path: "/root/.bash_history"
+  register: history_file
+
+- name: Import history to atuin
+  ansible.builtin.command: atuin import auto
+  environment:
+    HISTFILE: "/root/.bash_history"
+  when:
+    - history_file.stat.exists
+    - not atuin_import_marker.stat.exists
+  changed_when: false
+
+- name: Create marker file after successful import
+  ansible.builtin.file:
+    path: "/root/.atuin_import_done"
+    state: touch
+    mode: "0644"
+  when:
+    - history_file.stat.exists
+    - not atuin_import_marker.stat.exists

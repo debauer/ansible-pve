@@ -1,0 +1,9 @@
+---
+- name: Copy files to /home/"{{ user_name }}"
+  ansible.builtin.copy:
+    src: "files/{{ item.file }}"
+    dest: "/home/{{ user_name }}/{{ item.target }}"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0644"
+  with_items: "{{ user_shell_copy_files_to_user }}"
