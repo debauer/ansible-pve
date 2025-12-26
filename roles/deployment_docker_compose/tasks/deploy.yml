@@ -32,7 +32,7 @@
     password: "{{ config.registry_login.password }}"
   when:
     config.registry_login is defined
-  changed_when: False
+  changed_when: false
 
 - name: "Create and start docker compose services | {{ config.name }}"
   community.docker.docker_compose_v2:
@@ -54,4 +54,4 @@
     state: absent
   when:
     config.registry_login is defined
-  changed_when: False
+  changed_when: false

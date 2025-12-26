@@ -21,13 +21,13 @@
     cmd: echo "" > /etc/motd
   changed_when: false
 
-- name: "Create /root/font/"
+- name: Create /root/font/
   ansible.builtin.file:
     path: /root/font/
     state: directory
     mode: "0775"
 
-- name: "Copy fonts to system"
+- name: Copy fonts to system
   ansible.builtin.template:
     src: "{{ item }}"
     dest: "/root/font/{{ item }}"
@@ -36,7 +36,7 @@
     - poison.flf
     - doom.flf
 
-- name: "copy modt files to host"
+- name: Copy modt files to host
   ansible.builtin.template:
     src: "{{ item }}"
     dest: "/etc/update-motd.d/{{ item }}"
@@ -64,4 +64,4 @@
 
 - name: Set hostname
   ansible.builtin.hostname:
-    name: "{{ inventory_hostname | replace('_','-') }}"
+    name: "{{ inventory_hostname | replace('_', '-') }}"

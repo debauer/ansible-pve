@@ -1,0 +1,20 @@
+---
+- name: Create /etc/letsencrypt/inwx.cfg
+  ansible.builtin.template:
+    src: inwx.cfg
+    dest: /etc/letsencrypt/inwx.cfg
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Install general pip dependencies
+  become: true
+  ansible.builtin.pip:
+    name:
+    - certbot-dns-route53
+    state: present
+    break_system_packages: true
+    executable: /usr/bin/pip3
+  when:
+  - certbot_install_method == 'pip'
+  - certbot_install_route53_plugin is truthy

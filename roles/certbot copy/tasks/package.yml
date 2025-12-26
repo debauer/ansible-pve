@@ -1,0 +1,24 @@
+---
+- name: Install route53 plugin
+  become: true
+  ansible.builtin.package:
+    name:
+    - certbot
+    - certbot-dns-route53
+    state: present
+    break_system_packages: true
+    executable: /usr/bin/pip3
+  when:
+  - certbot_route53_install_plugin is truthy
+
+- name: Install inwx plugin
+  become: true
+  ansible.builtin.package:
+    name:
+    - certbot
+    - certbot-dns-inwx
+    state: present
+    break_system_packages: true
+    executable: /usr/bin/pip3
+  when:
+  - certbot_inwx_install_plugin is truthy

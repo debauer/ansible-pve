@@ -1,0 +1,9 @@
+---
+- name: Create /etc/letsencrypt/inwx.cfg
+  ansible.builtin.template:
+    src: inwx.cfg
+    dest: /etc/letsencrypt/inwx.cfg
+    owner: root
+    group: root
+    mode: "0600"
+

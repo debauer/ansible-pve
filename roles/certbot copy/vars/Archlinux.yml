@@ -1,0 +1,13 @@
+---
+certbot_install_method: package
+certbot_certs:
+certbot_package_install_binary: yay
+
+certbot_route53_install_plugin: false
+certbot_route53_access_key_id:
+certbot_route53_secret_access_key:
+
+certbot_inwx_install_plugin: false
+certbot_inwx_username:
+certbot_inwx_password:
+

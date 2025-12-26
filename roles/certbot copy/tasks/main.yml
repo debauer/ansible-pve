@@ -1,0 +1,33 @@
+---
+- name: Install snap
+  ansible.builtin.import_tasks: snap.yml
+  when:
+  - certbot_install_method == 'snap'
+  - certbot_certs is defined
+
+- name: Install pip
+  ansible.builtin.import_tasks: pip.yml
+  when:
+  - certbot_install_method == 'pip'
+  - certbot_certs is defined
+
+- name: Install package
+  ansible.builtin.import_tasks: package.yml
+  when:
+  - certbot_install_method == 'package'
+  - certbot_certs is defined
+
+- name: Mkdir /etc/letsencrypt
+  ansible.builtin.file:
+    path: /etc/letsencrypt
+    state: directory
+    owner: root
+    group: root
+    mode: "0600"
+  when: certbot_certs is defined
+
+- name: Include geerlingguy.certbot
+  ansible.builtin.include_role:
+    name: geerlingguy.certbot
+  when:
+  - certbot_certs is defined
