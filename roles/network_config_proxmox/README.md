@@ -1,5 +1,14 @@
----
-# Default network configuration variables
+# Ansible Role: network_config_proxmox
+
+## Requirements
+
+This role requires the `ansible.builtin` collection which is included with Ansible.
+
+## Role Variables
+
+Available variables are listed below, along with default values (see `defaults/main.yml`):
+
+```yaml
 network_config_file: /etc/network/interfaces
 network_config_primary_interface: enp0s31f6
 network_config_primary_ip: 138.201.133.113
@@ -20,3 +29,17 @@ network_config_bridges:
     netmask: 255.255.255.0
     ports: none
     additional_ips: []
+```
+
+## Example Playbook
+
+```yaml
+- hosts: proxmox_servers
+  become: yes
+  roles:
+    - network_config_proxmox
+```
+
+## License
+
+MIT

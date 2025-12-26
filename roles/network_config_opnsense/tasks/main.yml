@@ -5,13 +5,13 @@
       <interfaces>
         <lan>
           <if>igb0</if>
-          <ipaddr>{{ opnsense_lan_ip }}</ipaddr>
-          <subnet>{{ opnsense_lan_netmask }}</subnet>
+          <ipaddr>{{ network_config_opnsense_lan_ip }}</ipaddr>
+          <subnet>{{ network_config_opnsense_lan_netmask }}</subnet>
         </lan>
         <wan>
           <if>igb1</if>
-          <ipaddr>{{ opnsense_wan_ip }}</ipaddr>
-          <subnet>{{ opnsense_wan_netmask }}</subnet>
+          <ipaddr>{{ network_config_opnsense_wan_ip }}</ipaddr>
+          <subnet>{{ network_config_opnsense_wan_netmask }}</subnet>
         </wan>
       </interfaces>
     commit: true
@@ -23,10 +23,10 @@
       <interfaces>
         <lan>
           <if>igb0</if>
-          <ipaddr>{{ opnsense_lan_ip }}</ipaddr>
-          <subnet>{{ opnsense_lan_netmask }}</subnet>
+          <ipaddr>{{ network_config_opnsense_lan_ip }}</ipaddr>
+          <subnet>{{ network_config_opnsense_lan_netmask }}</subnet>
           <alias>
-            {% for ip in opnsense_additional_ips %}
+            {% for ip in network_config_opnsense_additional_ips %}
             <address>{{ ip }}</address>
             {% endfor %}
           </alias>

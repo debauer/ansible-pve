@@ -12,23 +12,16 @@ iface {{ network_config_primary_interface }} inet static
     gateway {{ network_config_primary_gateway }}
     dns-nameservers {{ network_config_dns_servers | join(' ') }}
 
-# Bridge interface for VMs
-auto vmbr0
-iface vmbr0 inet static
-    address {{ network_config_vmbr0_ip }}
-    netmask {{ network_config_vmbr0_netmask }}
-    bridge-ports {{ network_config_vmbr0_ports }}
+# Bridge interfaces
+{% for bridge in network_config_bridges %}
+auto {{ bridge.name }}
+iface {{ bridge.name }} inet static
+    address {{ bridge.ip }}
+    netmask {{ bridge.netmask }}
+    bridge-ports {{ bridge.ports }}
     bridge-stp off
     bridge-fd 0
-
-# Bridge interface for internal VM network
-auto vmbr1
-iface vmbr1 inet static
-    address {{ network_config_vmbr1_ip }}
-    netmask {{ network_config_vmbr1_netmask }}
-    bridge-ports {{ network_config_vmbr1_ports }}
-    bridge-stp off
-    bridge-fd 0
-{% for ip in network_config_additional_ips_vmbr1 %}
+    {% for ip in bridge.additional_ips %}
     address {{ ip }}/24
+    {% endfor %}
 {% endfor %}
