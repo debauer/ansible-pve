@@ -1,0 +1,10 @@
+---
+# OPNsense network configuration variables
+opnsense_network_config_lan_ip: 10.68.0.1
+opnsense_network_config_lan_netmask: 24
+opnsense_network_config_wan_ip: 138.201.133.113
+opnsense_network_config_wan_netmask: 26
+opnsense_network_config_additional_ips:
+  - 138.201.133.94
+  - 138.201.133.98
+  - 138.201.133.99

@@ -1,0 +1,18 @@
+---
+# Default network configuration variables
+network_config_file: /etc/network/interfaces
+network_config_primary_interface: enp0s31f6
+network_config_primary_ip: 138.201.133.113
+network_config_primary_netmask: 255.255.255.192
+network_config_primary_gateway: 138.201.133.126
+network_config_dns_servers: ["1.1.1.1", "1.0.0.1"]
+network_config_vmbr0_ip: 10.67.0.2
+network_config_vmbr0_netmask: 255.255.255.0
+network_config_vmbr0_ports: enp0s31f6
+network_config_vmbr1_ip: 10.68.0.2
+network_config_vmbr1_netmask: 255.255.255.0
+network_config_vmbr1_ports: none
+network_config_additional_ips_vmbr1:
+  - 138.201.133.94
+  - 138.201.133.98
+  - 138.201.133.99

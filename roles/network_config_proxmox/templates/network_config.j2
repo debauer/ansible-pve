@@ -1,0 +1,34 @@
+# This is a template for the network configuration file
+# It will be used to configure the Proxmox host network interfaces
+
+auto lo
+iface lo inet loopback
+
+# Primary network interface
+auto {{ network_config_primary_interface }}
+iface {{ network_config_primary_interface }} inet static
+    address {{ network_config_primary_ip }}
+    netmask {{ network_config_primary_netmask }}
+    gateway {{ network_config_primary_gateway }}
+    dns-nameservers {{ network_config_dns_servers | join(' ') }}
+
+# Bridge interface for VMs
+auto vmbr0
+iface vmbr0 inet static
+    address {{ network_config_vmbr0_ip }}
+    netmask {{ network_config_vmbr0_netmask }}
+    bridge-ports {{ network_config_vmbr0_ports }}
+    bridge-stp off
+    bridge-fd 0
+
+# Bridge interface for internal VM network
+auto vmbr1
+iface vmbr1 inet static
+    address {{ network_config_vmbr1_ip }}
+    netmask {{ network_config_vmbr1_netmask }}
+    bridge-ports {{ network_config_vmbr1_ports }}
+    bridge-stp off
+    bridge-fd 0
+{% for ip in network_config_additional_ips_vmbr1 %}
+    address {{ ip }}/24
+{% endfor %}

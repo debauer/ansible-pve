@@ -25,6 +25,14 @@
 
         - name: Include role
           ansible.builtin.include_role:
+            name: roles/network_config
+
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/opnsense_network_config
+
+        - name: Include role
+          ansible.builtin.include_role:
             name: roles/user/user_add
           when: users is defined
 
