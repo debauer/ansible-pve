@@ -1,0 +1,21 @@
+---
+- name: "/etc/config/$file"
+  ansible.builtin.template:
+    src: "config/{{ item }}.j2"
+    dest: "/etc/config/{{ item }}"
+    mode: "0644"
+  with_items:
+    - system
+    - dhcp
+    - firewall
+    - network
+  notify: wrt restart
+
+- name: "/etc/$file"
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/{{ item }}"
+    mode: "0644"
+  with_items:
+    - banner
+  changed_when: false

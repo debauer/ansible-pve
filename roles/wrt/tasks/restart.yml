@@ -1,0 +1,9 @@
+---
+- name: Restart
+  ansible.builtin.command:
+    cmd: reboot
+  changed_when: false
+- name: Wait for reboot
+  ansible.builtin.wait_for_connection:
+    timeout: 300
+    delay: 60
