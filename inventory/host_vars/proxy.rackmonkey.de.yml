@@ -1,0 +1,34 @@
+---
+proxmox_vmid: 102
+ansible_host: fw.rackmonkey.de
+ansible_port: '30102'
+
+dns_inwx_cname:
+  - domain: rackmonkey.de
+    type: CNAME
+    records:
+      - awx
+    value: proxy.rackmonkey.de
+
+dns_inwx:
+  - domain: rackmonkey.de
+    type: A
+    record: proxy
+    value: 192.168.1.241
+
+certbot_install_method: "pip"
+certbot_certs:
+  - domains: [proxy.rackmonkey.de]
+
+nginx_proxy_deployment: "package"
+nginx_proxy:
+  - target_fqdn: fw.rackmonkey.de
+    src_address: 10.63.10.1
+    src_port: 80
+    proxy_ssl: false
+  - target_fqdn: git.rackmonkey.de
+    src_address: 10.63.10.3
+    src_port: 80
+    proxy_ssl: false
+
+nginx_proxy_dns_resolver: 192.168.1.2

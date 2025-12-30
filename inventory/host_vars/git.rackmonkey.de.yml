@@ -1,0 +1,4 @@
+---
+proxmox_vmid: 100
+ansible_host: fw.rackmonkey.de
+ansible_port: '30100'
