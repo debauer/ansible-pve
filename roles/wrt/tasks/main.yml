@@ -29,21 +29,62 @@
   check_mode: false
   changed_when: false
 
-- name: "Copy files to host"
+- name: "Copy firewall config to host"
   community.openwrt.copy:
-    src: "/{{ wrt_build_dir.path }}/{{ item }}"
-    dest: "/etc/config/{{ item }}"
+    src: "/{{ wrt_build_dir.path }}/firewall"
+    dest: "/etc/config/firewall"
     mode: "0644"
-  with_items:
-    - dhcp
-    - dropbear
-    - firewall
-#    - luci
-#    - network
-#    - rpcd
-#    - system
-#    - uhttpd
-  notify: Wrt restart
+  notify: Reload firewall
+
+- name: "Copy network config to host"
+  community.openwrt.copy:
+    src: "/{{ wrt_build_dir.path }}/network"
+    dest: "/etc/config/network"
+    mode: "0644"
+  notify: Reload network
+
+- name: "Copy uhttpd config to host"
+  community.openwrt.copy:
+    src: "/{{ wrt_build_dir.path }}/uhttpd"
+    dest: "/etc/config/uhttpd"
+    mode: "0644"
+  notify: Reload uhttpd
+
+- name: "Copy dhcp config to host"
+  community.openwrt.copy:
+    src: "/{{ wrt_build_dir.path }}/dhcp"
+    dest: "/etc/config/dhcp"
+    mode: "0644"
+  notify: Reload odhcpd
+
+- name: "Copy dropbear config to host"
+  community.openwrt.copy:
+    src: "/{{ wrt_build_dir.path }}/dropbear"
+    dest: "/etc/config/dropbear"
+    mode: "0644"
+  notify: Reload dropbear
+
+- name: "Copy system config to host"
+  community.openwrt.copy:
+    src: "/{{ wrt_build_dir.path }}/system"
+    dest: "/etc/config/system"
+    mode: "0644"
+  notify: Reload system
+
+- name: "Copy luci config to host"
+  community.openwrt.copy:
+    src: "/{{ wrt_build_dir.path }}/luci"
+    dest: "/etc/config/luci"
+    mode: "0644"
+  notify: Reload uhttpd
+
+- name: "Copy rpcd config to host"
+  community.openwrt.copy:
+    src: "/{{ wrt_build_dir.path }}/rpcd"
+    dest: "/etc/config/rpcd"
+    mode: "0644"
+  notify: Reload rpcd
+
 
 - name: "Build files from templates"
   ansible.builtin.template:

@@ -1,3 +1,40 @@
 ---
-- name: Firewall reload
-  ansible.builtin.include_tasks: tasks/restart.yml
+- name: Reload firewall
+  community.openwrt.command:
+    cmd: service firewall reload
+  changed_when: false
+
+- name: Reload network
+  community.openwrt.command:
+    cmd: service network reload
+  changed_when: false
+
+- name: Reload uhttpd
+  community.openwrt.command:
+    cmd: service uhttpd reload
+  changed_when: false
+
+- name: Reload odhcpd
+  community.openwrt.command:
+    cmd: service odhcpd reload
+  changed_when: false
+
+- name: Reload dropbear
+  community.openwrt.command:
+    cmd: service dropbear reload
+  changed_when: false
+
+- name: Reload system
+  community.openwrt.command:
+    cmd: service system reload
+  changed_when: false
+
+- name: Reload uhttpd
+  community.openwrt.command:
+    cmd: service uhttpd reload
+  changed_when: false
+
+- name: Reload rpcd
+  community.openwrt.command:
+    cmd: service rpcd reload
+  changed_when: false

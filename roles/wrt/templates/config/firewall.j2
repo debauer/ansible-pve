@@ -138,11 +138,11 @@ config rule
 {% endif %}
 
 
-{% if wrt_interface is defined %}
-{% for interface in wrt_interface %}
-wrt_redirect:
+{% if wrt_redirect is defined %}
+{% for interface in wrt_redirect %}
+config redirect
 {% for key, value in interface.items() if key != 'name' %}
-	{{ key }}: '{{ value }}'
+	option {{ key }} '{{ value }}'
 {% endfor %}
 
 {% endfor %}

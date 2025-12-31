@@ -34,6 +34,7 @@
         - name: Include role
           ansible.builtin.include_role:
             name: roles/network_interfaces
+          when: network_interfaces_interfaces is defined
 
         - name: Include role
           ansible.builtin.include_role:

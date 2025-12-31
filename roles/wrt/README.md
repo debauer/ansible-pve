@@ -20,6 +20,8 @@ Defaults are in `roles/wrt/default/main.yml`.
 - `wrt_interface` (list of dicts): Fully defines `config interface` blocks in
   `network.j2`. Each dict must include `name` and can include any OpenWrt network
   options. List values are rendered as `list <key>`.
+- `wrt_redirect` (dict): Single redirect definition used by `firewall.j2`
+  (legacy/static rule).
 - Inventory host vars (examples):
   - `proxmox_vmid` (int): Used by `firewall.j2` to generate SSH DNAT port forwards.
   - `network_interfaces_interfaces` (list): Used by `firewall.j2` for dest IPs
@@ -38,6 +40,16 @@ wrt_interface:
     device: eth0
     ipaddr: 10.63.10.1
     netmask: 255.255.255.0
+
+wrt_redirect:
+  - dest: 'lan'
+    target: 'DNAT'
+    name: 'ssh git.rackmonkey.de'
+    src: 'wan'
+    src_dport: '30130'
+    dest_ip: '10.63.10.6'
+    dest_port: '22'
+
 
 wrt_dropbear_port: "22"
 wrt_ntp_server:

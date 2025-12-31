@@ -1,4 +1,9 @@
 ---
+dns_inwx:
+  - domain: rackmonkey.de
+    type: A
+    record: pve
+    value: 138.201.133.113
 
 network_interfaces_interfaces:
   - name: enp0s31f6
@@ -33,11 +38,7 @@ network_interfaces_interfaces:
     bridge_stp: off
     bridge_fd: 0
 
-dns_inwx:
-  - domain: rackmonkey.de
-    type: A
-    record: pve
-    value: 138.201.133.113
+
 
 user_sudo_without_password: true
 user_zsh: true
