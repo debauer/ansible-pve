@@ -9,7 +9,13 @@ config system
 config timeserver 'ntp'
 	option enabled '1'
 	option enable_server '0'
+{% if wrt_ntp_server is defined %}
+{% for server in wrt_ntp_server %}
+	list server '{{ server }}'
+{% endfor %}
+{% else %}
 	list server '0.openwrt.pool.ntp.org'
 	list server '1.openwrt.pool.ntp.org'
 	list server '2.openwrt.pool.ntp.org'
 	list server '3.openwrt.pool.ntp.org'
+{% endif %}

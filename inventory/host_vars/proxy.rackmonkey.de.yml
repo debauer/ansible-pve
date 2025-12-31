@@ -1,20 +1,20 @@
 ---
 proxmox_vmid: 102
-ansible_host: fw.rackmonkey.de
-ansible_port: '30102'
+
+network_interfaces_interfaces:
+  - name: eth0
+    address: 10.63.10.3
+    netmask: 255.255.255.0
+    gateway: 10.63.10.1
+    nat_subnet: rackmonkey
 
 dns_inwx_cname:
   - domain: rackmonkey.de
     type: CNAME
     records:
-      - awx
-    value: proxy.rackmonkey.de
+      - proxy
+    value: fw.rackmonkey.de
 
-dns_inwx:
-  - domain: rackmonkey.de
-    type: A
-    record: proxy
-    value: 192.168.1.241
 
 certbot_install_method: "pip"
 certbot_certs:

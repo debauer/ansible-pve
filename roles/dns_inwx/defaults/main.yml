@@ -1,0 +1,3 @@
+---
+dns_inwx_ttl_default: 300
+dns_inwx_managed_domains: []

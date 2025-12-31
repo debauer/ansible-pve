@@ -1,8 +1,16 @@
 ---
 - name: Cloud
-  hosts: pve
-  gather_facts: true
+  hosts: all,!meta,!openwrt
+  gather_facts: false
   become: true
+
+  pre_tasks:
+    - name: Resolve SSH port
+      ansible.builtin.include_role:
+        name: roles/ssh_port_resolver
+
+    - name: Gather facts
+      ansible.builtin.setup:
 
   tasks:
     - name: Basic roles
@@ -25,11 +33,7 @@
 
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/network_config
-
-        - name: Include role
-          ansible.builtin.include_role:
-            name: roles/opnsense_network_config
+            name: roles/network_interfaces
 
         - name: Include role
           ansible.builtin.include_role:

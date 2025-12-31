@@ -1,0 +1,22 @@
+---
+dns_inwx:
+  # Bastelfreak altlasten
+  - domain: rackmonkey.de
+    type: A
+    record: webserver01
+    value: 144.76.249.219
+  - domain: rackmonkey.de
+    type: AAAA
+    record: webserver01
+    value: 2a01:4f8:171:1152::4
+
+  - domain: rackmonkey.de
+    type: A
+    record: mail01
+    value: 144.76.249.221
+  - domain: rackmonkey.de
+    type: AAAA
+    record: mail01
+    value: 2a01:4f8:171:1152::7
+
+

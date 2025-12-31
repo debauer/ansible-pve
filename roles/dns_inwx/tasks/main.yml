@@ -1,0 +1,43 @@
+---
+- name: Inwx_dns_zone
+  inwx_dns_zone:
+    domains: "{{ dns_inwx_managed_domains }}"
+    password: "{{ dns_inwx_password }}"
+    username: "{{ dns_inwx_user }}"
+  register: dns_inwx_zone
+  no_log: true
+
+- name: Filter_for_domain
+  filter_for_domain:
+    inwx_zone: "{{ dns_inwx_zone }}"
+    hostvars: "{{ hostvars }}"
+  register: dns_inwx_filtered_domains
+  changed_when: false
+
+- name: Delete an dns records at inwx"
+  inwx.collection.dns:
+    domain: "{{ item.domain }}"
+    type: "{{ item.type }}"
+    record: "{{ item.record }}"
+    value: "{{ item.value }}"
+    ttl: "{{ item.ttl }}"
+    username: "{{ dns_inwx_user }}"
+    password: "{{ dns_inwx_password }}"
+    solo: true
+    state: "absent"
+  with_items: "{{ dns_inwx_filtered_domains.delete }}"
+  when: not ansible_check_mode
+
+- name: Create an dns records at inwx"
+  inwx.collection.dns:
+    domain: "{{ item.domain }}"
+    type: "{{ item.type }}"
+    record: "{{ item.record }}"
+    value: "{{ item.value }}"
+    ttl: "{{ item.ttl }}"
+    username: "{{ dns_inwx_user }}"
+    password: "{{ dns_inwx_password }}"
+    solo: true
+    state: "present"
+  with_items: "{{ dns_inwx_filtered_domains.create }}"
+  when: not ansible_check_mode

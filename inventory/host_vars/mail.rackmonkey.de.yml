@@ -1,14 +1,6 @@
 ---
 proxmox_vmid: 101
 
-ansible_user: root
-ansible_ssh_transfer_method: sftp
-ansible_ssh_use_tty: false
-ansible_scp_if_ssh: true
-ansible_remote_tmp: "/tmp"
-ansible_python_interpreter: ""
-openwrt_install_recommended_packages: false
-
 dns_inwx:
   - domain: rackmonkey.de
     type: A
@@ -26,13 +18,20 @@ wrt_interface:
     proto: static
     device: eth0
     ipaddr: 10.63.10.1
-    netmask: '255.255.255.0'
+    network: '255.255.255.0'
 
 wrt_ntp_server:
   - '0.openwrt.pool.ntp.org'
   - '1.openwrt.pool.ntp.org'
   - '2.openwrt.pool.ntp.org'
   - '3.openwrt.pool.ntp.org'
+
+
+wrt_redirect_ssh:
+  subnet_prefix: "10.63.10."
+  from: 2
+  to: 255
+  base_port: 30100
 
 wrt_redirect:
   dest: 'lan'
@@ -42,6 +41,3 @@ wrt_redirect:
   src_dport: '30100'
   dest_ip: '10.63.10.2'
   dest_port: '22'
-
-wrt_ssh_on_wan: true
-wrt_http_on_wan: true

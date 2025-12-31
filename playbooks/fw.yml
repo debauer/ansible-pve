@@ -1,0 +1,8 @@
+---
+- name: Update inwx dns
+  hosts: openwrt
+  gather_facts: false
+
+  roles:
+    - community.openwrt.init
+    - roles/wrt

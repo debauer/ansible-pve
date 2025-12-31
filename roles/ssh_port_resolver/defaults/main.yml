@@ -1,0 +1,3 @@
+---
+ssh_port_resolver_default_port: 22
+ssh_port_resolver_offset: 30000

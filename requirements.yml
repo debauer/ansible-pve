@@ -1,0 +1,10 @@
+---
+# from GitHub, overriding the name and specifying a specific tag
+collections:
+  - name: inwx.collection
+  - name: imp1sh.ansible_managemynetwork
+  - name: community.general
+  - git+https://github.com/ansible-collections/community.openwrt
+
+roles:
+  - name: geerlingguy.certbot

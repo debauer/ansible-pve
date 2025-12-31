@@ -8,12 +8,12 @@ config globals 'globals'
 	option ula_prefix 'fd2b:6083:51c2::/48'
 	option packet_steering '1'
 
-config interface 'wan'
-	option device 'eth1'
-	option proto 'dhcp'
+{% if wrt_interface is defined %}
+{% for interface in wrt_interface %}
+config interface '{{ interface.name }}'
+{% for key, value in interface.items() if key != 'name' %}
+	option {{ key }} '{{ value }}'
+{% endfor %}
 
-config interface 'lan'
-	option device 'eth0'
-	option proto 'static'
-	option ipaddr '10.63.10.1'
-	option netmask '255.255.255.0'
+{% endfor %}
+{% endif %}

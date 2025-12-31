@@ -1,0 +1,15 @@
+---
+- name: Update inwx dns
+  hosts: inwx
+  gather_facts: false
+  vars_files:
+    - ../vars/secrets.yml
+
+  tasks:
+    - name: Dns roles
+      tags: dns
+      delegate_to: localhost
+      block:
+        - name: Include dns_inwx role
+          ansible.builtin.include_role:
+            name: roles/dns_inwx

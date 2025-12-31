@@ -1,5 +1,44 @@
 ---
 
+network_interfaces_interfaces:
+  - name: enp0s31f6
+    mode: static
+    protocol: inet6
+    address: 2a01:4f8:172:30ad::2/64
+    gateway: fe80::1
+  - name: enp0s31f6
+    mode: manual
+
+  - name: vmbr0
+    comment: "bridge networt HOST <-> OPNSENSE"
+    mode: static
+    address: 138.201.133.113/32
+    ports: enp0s31f6
+    gateway: 138.201.133.65
+    bridge_ports: enp0s31f6
+    bridge_stp: off
+    bridge_fd: 0
+
+  - name: vmbr0
+    mode: static
+    protocol: inet6
+    address: 2a01:4f8:172:30ad::3/64
+
+  - name: vmbr1
+    comment: "bridge internal for shared services"
+    mode: static
+    address: 10.63.13.1/24
+    bridge: true
+    bridge_ports: none
+    bridge_stp: off
+    bridge_fd: 0
+
+dns_inwx:
+  - domain: rackmonkey.de
+    type: A
+    record: pve
+    value: 138.201.133.113
+
 user_sudo_without_password: true
 user_zsh: true
 users:

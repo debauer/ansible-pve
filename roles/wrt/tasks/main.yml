@@ -1,19 +1,64 @@
 ---
-- name: "/etc/config/$file"
+- name: Get openwrt facts
+  community.openwrt.setup:
+
+- name: Create temporary build directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: build
+  register: wrt_build_dir
+  delegate_to: localhost
+  check_mode: false
+  changed_when: false
+
+- name: "Build files from templates"
   ansible.builtin.template:
     src: "config/{{ item }}.j2"
+    dest: "{{ wrt_build_dir.path }}/{{ item }}"
+    mode: "0644"
+  with_items:
+    - dhcp
+    - dropbear
+    - firewall
+    - luci
+    - network
+    - rpcd
+    - system
+    - uhttpd
+  delegate_to: localhost
+  check_mode: false
+  changed_when: false
+
+- name: "Copy files to host"
+  community.openwrt.copy:
+    src: "/{{ wrt_build_dir.path }}/{{ item }}"
     dest: "/etc/config/{{ item }}"
     mode: "0644"
   with_items:
-    - system
     - dhcp
+    - dropbear
     - firewall
-    - network
-  notify: wrt restart
+#    - luci
+#    - network
+#    - rpcd
+#    - system
+#    - uhttpd
+  notify: Wrt restart
 
-- name: "/etc/$file"
+- name: "Build files from templates"
   ansible.builtin.template:
     src: "{{ item }}.j2"
+    dest: "/{{ wrt_build_dir.path }}/{{ item }}"
+    mode: "0644"
+  with_items:
+    - banner
+  changed_when: false
+  delegate_to: localhost
+  check_mode: false
+
+- name: "Copy files to host"
+  community.openwrt.copy:
+    src: "/{{ wrt_build_dir.path }}/{{ item }}"
     dest: "/etc/{{ item }}"
     mode: "0644"
   with_items:

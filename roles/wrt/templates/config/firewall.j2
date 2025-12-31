@@ -119,29 +119,52 @@ config rule
 	option proto 'udp'
 	option target 'ACCEPT'
 
-config wan_https_allow
-
-config wan_https_allow=rule
-
+{% if wrt_http_on_wan is truthy %}
 config rule 'wan_https_allow'
 	option name 'allow luci from wan'
 	option src 'wan'
 	option proto 'tcp'
 	option dest_port '80 443'
 	option target 'ACCEPT'
+{% endif %}
 
+{% if wrt_ssh_on_wan is truthy %}
 config rule
 	option name 'allow ssh from wan'
 	option src 'wan'
 	option proto 'tcp'
 	option dest_port '22'
 	option target 'ACCEPT'
+{% endif %}
+
+
+{% if wrt_interface is defined %}
+{% for interface in wrt_interface %}
+wrt_redirect:
+{% for key, value in interface.items() if key != 'name' %}
+	{{ key }}: '{{ value }}'
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+
+
+{% for host in (groups['all'] | sort) %}
+{% set hv = hostvars[host] %}
+{% if hv.proxmox_vmid is defined and hv.network_interfaces_interfaces is defined %}
+{% for interface in hv.network_interfaces_interfaces %}
+{% if interface.address is defined %}
 
 config redirect
 	option dest 'lan'
 	option target 'DNAT'
-	option name 'ssh git.rackmonkey.de'
+	option name 'ssh {{ host }}'
 	option src 'wan'
-	option src_dport '30100'
-	option dest_ip '10.63.10.2'
+	option src_dport '{{ 30000 + (hv.proxmox_vmid | int) }}'
+	option dest_ip '{{ interface.address }}'
 	option dest_port '22'
+
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}

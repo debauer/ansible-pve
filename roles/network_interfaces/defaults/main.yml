@@ -1,6 +1,6 @@
 ---
 # Default network configuration variables
-network_interfaces_file: /etc/network/interfaces_test
+network_interfaces_file: /etc/network/interfaces
 network_interfaces_dns_servers: ["1.1.1.1", "8.8.8.8"]
 network_interfaces_interfaces:
   - name: vmbr0
