@@ -11,6 +11,7 @@ packages_common:
   - unzip
   - rsync
   - tree
+  - etckeeper
 packages_additional: []
 packages_remove: []
 packages_pip_install: false

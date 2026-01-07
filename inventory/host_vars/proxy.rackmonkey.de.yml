@@ -1,34 +1,29 @@
 ---
-proxmox_vmid: 102
-
-network_interfaces_interfaces:
-  - name: eth0
-    address: 10.63.10.3
-    netmask: 255.255.255.0
-    gateway: 10.63.10.1
-    nat_subnet: rackmonkey
-
+certbot_certs:
+  - domains:
+      - proxy.rackmonkey.de
+certbot_install_method: pip
 dns_inwx_cname:
   - domain: rackmonkey.de
-    type: CNAME
     records:
       - proxy
+    type: CNAME
     value: fw.rackmonkey.de
-
-
-certbot_install_method: "pip"
-certbot_certs:
-  - domains: [proxy.rackmonkey.de]
-
-nginx_proxy_deployment: "package"
+network_interfaces_interfaces:
+  - address: 10.63.10.3
+    gateway: 10.63.10.1
+    name: eth0
+    nat_subnet: rackmonkey
+    netmask: 255.255.255.0
 nginx_proxy:
-  - target_fqdn: fw.rackmonkey.de
+  - proxy_ssl: false
     src_address: 10.63.10.1
     src_port: 80
-    proxy_ssl: false
-  - target_fqdn: git.rackmonkey.de
+    target_fqdn: fw.rackmonkey.de
+  - proxy_ssl: false
     src_address: 10.63.10.3
     src_port: 80
-    proxy_ssl: false
-
+    target_fqdn: git.rackmonkey.de
+nginx_proxy_deployment: package
 nginx_proxy_dns_resolver: 192.168.1.2
+proxmox_vmid: 102

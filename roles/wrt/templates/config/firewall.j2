@@ -120,6 +120,9 @@ config rule
 	option target 'ACCEPT'
 
 {% if wrt_http_on_wan is truthy %}
+config wan_https_allow
+config wan_https_allow=rule
+
 config rule 'wan_https_allow'
 	option name 'allow luci from wan'
 	option src 'wan'

@@ -96,9 +96,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-"debauer.it, A, homematic, 192.168.1.105, 360",
-"debauer.it, A, homematic, 192.168.1.105, 360"
-"debauer.it, CNAME, homebox.debauer.it, docker1.debauer.it, 360",
-"debauer.it, CNAME, homebox, docker1.debauer.it, 360",
