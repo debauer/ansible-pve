@@ -1,40 +1,34 @@
 ---
-proxmox_vmid: 101
-
-ansible_user: root
+ansible_python_interpreter: ""
+ansible_remote_tmp: /tmp
+ansible_scp_if_ssh: true
 ansible_ssh_transfer_method: sftp
 ansible_ssh_use_tty: false
-ansible_scp_if_ssh: true
-ansible_remote_tmp: "/tmp"
-ansible_python_interpreter: ""
-
-openwrt_install_recommended_packages: false
-
+ansible_user: root
 dns_inwx:
   - domain: rackmonkey.de
-    type: A
     record: fw
+    type: A
     value: 138.201.133.94
-
-wrt_ssh_allow_on_wan: true
-wrt_luci_allow_on_wan: true
-
+openwrt_install_recommended_packages: false
+proxmox_vmid: 101
+wrt_http_on_wan: true
 wrt_interface:
-  - name: wan
+  - device: eth1
+    name: wan
     proto: dhcp
-    device: eth1
-  - name: lan
-    proto: static
-    device: eth0
+  - device: eth0
     ipaddr: 10.63.10.1
-    netmask: '255.255.255.0'
-
+    name: lan
+    netmask: 255.255.255.0
+    proto: static
+wrt_luci_allow_on_wan: true
 wrt_ntp_server:
-  - '0.openwrt.pool.ntp.org'
-  - '1.openwrt.pool.ntp.org'
-  - '2.openwrt.pool.ntp.org'
-  - '3.openwrt.pool.ntp.org'
-
+  - 0.openwrt.pool.ntp.org
+  - 1.openwrt.pool.ntp.org
+  - 2.openwrt.pool.ntp.org
+  - 3.openwrt.pool.ntp.org
+wrt_ssh_allow_on_wan: true
 # wrt_redirect:
 #   - dest: 'lan'
 #     target: 'DNAT'
@@ -43,6 +37,4 @@ wrt_ntp_server:
 #     src_dport: '30130'
 #     dest_ip: '10.63.10.6'
 #     dest_port: '22'
-
 wrt_ssh_on_wan: true
-wrt_http_on_wan: true
