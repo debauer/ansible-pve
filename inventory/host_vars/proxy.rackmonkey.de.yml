@@ -1,29 +1,14 @@
 ---
-certbot_certs:
+
+
+lego_certs:
   - domains:
       - proxy.rackmonkey.de
-certbot_install_method: pip
+  - domains:
+      - test.rackmonkey.de
 dns_inwx_cname:
   - domain: rackmonkey.de
     records:
       - proxy
-    type: CNAME
-    value: fw.rackmonkey.de
-network_interfaces_interfaces:
-  - address: 10.63.10.3
-    gateway: 10.63.10.1
-    name: eth0
-    nat_subnet: rackmonkey
-    netmask: 255.255.255.0
-nginx_proxy:
-  - proxy_ssl: false
-    src_address: 10.63.10.1
-    src_port: 80
-    target_fqdn: fw.rackmonkey.de
-  - proxy_ssl: false
-    src_address: 10.63.10.3
-    src_port: 80
-    target_fqdn: git.rackmonkey.de
-nginx_proxy_deployment: package
-nginx_proxy_dns_resolver: 192.168.1.2
-proxmox_vmid: 102
+    type: A
+    value: 138.201.133.94

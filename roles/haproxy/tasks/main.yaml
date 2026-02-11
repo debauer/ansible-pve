@@ -1,0 +1,22 @@
+---
+- name: Install haproxy
+  ansible.builtin.package:
+    name: haproxy
+    state: present
+
+- name: Create Haproxy Cert Dir
+  ansible.builtin.file:
+    path: /etc/haproxy/certs/
+    state: directory
+    owner: root
+    group: root
+
+- name: Template Haproxy Config
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: "0644"
+
+

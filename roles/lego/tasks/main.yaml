@@ -1,0 +1,6 @@
+---
+- name: Install Lego
+  ansible.bulitin.package:
+    name: lego
+    state: present
+
