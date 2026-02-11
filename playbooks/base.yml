@@ -1,5 +1,5 @@
 ---
-- name: Cloud
+- name: Base Playbook
   hosts: all,!meta,!openwrt
   gather_facts: false
   become: true

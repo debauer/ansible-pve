@@ -2,8 +2,6 @@
 - name: Update inwx dns
   hosts: inwx
   gather_facts: false
-  vars_files:
-    - ../vars/secrets.yml
 
   tasks:
     - name: Dns roles
