@@ -55,12 +55,12 @@
                 inherit virtualenv;
 
                 ansible-pve = final.callPackage
-                  ({ stdenv, glibcLocales, go, hcloud, nixfmt-rfc-style, terraform, uv, virtualenv }:
+                  ({ stdenv, glibcLocales,  hcloud, nixfmt-rfc-style,  uv, virtualenv, yq }:
 
                     stdenv.mkDerivation {
                       name = "ansible-pve";
 
-                      buildInputs = [ hcloud glibcLocales go nixfmt-rfc-style terraform uv virtualenv ];
+                      buildInputs = [ hcloud glibcLocales nixfmt-rfc-style uv virtualenv yq ];
 
                       dontUsePyprojectBuild = true;
                     }
