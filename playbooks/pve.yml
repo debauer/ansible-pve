@@ -1,21 +1,10 @@
 ---
 - name: Cloud
   hosts: pve.rackmonkey.de
-  gather_facts: false
+  gather_facts: true
   become: true
 
-  pre_tasks:
-    - name: Resolve SSH port
-      ansible.builtin.include_role:
-        name: roles/ssh_port_resolver
-
-    - name: Gather facts
-      ansible.builtin.setup:
-
   tasks:
-    - name: Basic roles
-      tags: basic
-      block:
-        - name: Include role
-          ansible.builtin.include_role:
-            name: roles/network_interfaces
+    - name: Include role
+      ansible.builtin.include_role:
+        name: roles/network_interfaces

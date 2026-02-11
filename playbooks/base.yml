@@ -1,16 +1,9 @@
 ---
 - name: Base Playbook
-  hosts: all,!meta,!openwrt
-  gather_facts: false
+  hosts: all,!meta
+  gather_facts: True
   become: true
 
-  pre_tasks:
-    - name: Resolve SSH port
-      ansible.builtin.include_role:
-        name: roles/ssh_port_resolver
-
-    - name: Gather facts
-      ansible.builtin.setup:
 
   tasks:
     - name: Basic roles

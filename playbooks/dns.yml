@@ -4,10 +4,7 @@
   gather_facts: false
 
   tasks:
-    - name: Dns roles
-      tags: dns
+    - name: Include dns_inwx role
+      ansible.builtin.include_role:
+        name: roles/dns_inwx
       delegate_to: localhost
-      block:
-        - name: Include dns_inwx role
-          ansible.builtin.include_role:
-            name: roles/dns_inwx
