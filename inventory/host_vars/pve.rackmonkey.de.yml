@@ -5,26 +5,20 @@ dns_inwx:
     type: A
     value: 138.201.133.113
 network_interfaces_interfaces:
-  - address: 2a01:4f8:172:30ad::2/64
-    gateway: fe80::1
-    mode: static
-    name: enp0s31f6
-    protocol: inet6
-  - mode: manual
-    name: enp0s31f6
   - address: 138.201.133.113/32
     bridge_fd: 0
     bridge_ports: enp0s31f6
     bridge_stp: off
-    comment: bridge networt HOST <-> OPNSENSE
+    comment: uplink bridge
     gateway: 138.201.133.65
     mode: static
     name: vmbr0
     ports: enp0s31f6
-  - address: 2a01:4f8:172:30ad::3/64
+  - address: 2a01:4f8:172:30ad::1/64
     mode: static
     name: vmbr0
     protocol: inet6
+    gateway: fe80::1
   - address: 10.63.13.1/24
     bridge: true
     bridge_fd: 0
@@ -33,20 +27,3 @@ network_interfaces_interfaces:
     comment: bridge internal for shared services
     mode: static
     name: vmbr1
-user_sudo_without_password: true
-user_zsh: true
-users:
-  - authorized_keys:
-      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILZIcGOqCoTrLbCg06e3HYHwweskvvdPK+w81LlHmHvM debauer@bauer-t14s
-    groups:
-      - wheel
-    name: ansible
-    shell: /bin/sh
-    ssh: true
-  - authorized_keys:
-      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILZIcGOqCoTrLbCg06e3HYHwweskvvdPK+w81LlHmHvM debauer@bauer-t14s
-    groups:
-      - wheel
-    name: debauer
-    shell: /bin/zsh
-    ssh: true

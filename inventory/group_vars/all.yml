@@ -7,3 +7,30 @@ dns_inwx_managed_domains:
   - rackmonkey.de
 dns_inwx_zone_ignore_subdomains:
   - home
+user_sudo_without_password: true
+user_zsh: true
+users:
+  - authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILZIcGOqCoTrLbCg06e3HYHwweskvvdPK+w81LlHmHvM debauer@bauer-t14s
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDwzwboGpAFHjhezJWFu/I3ERf2mWMQYMc/4N8yn9h1l 
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPCmpZ0IZG91e4q6+c0jtgJ62JvE8JbumXLRtpp86/yv
+    groups:
+      - wheel
+    name: ansible
+    shell: /bin/sh
+    ssh: true
+  - authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILZIcGOqCoTrLbCg06e3HYHwweskvvdPK+w81LlHmHvM debauer@bauer-t14s
+    groups:
+      - wheel
+    name: debauer
+    shell: /bin/zsh
+    ssh: true
+  - authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDwzwboGpAFHjhezJWFu/I3ERf2mWMQYMc/4N8yn9h1l 
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPCmpZ0IZG91e4q6+c0jtgJ62JvE8JbumXLRtpp86/yv
+    groups:
+      - wheel
+    name: korkenzieher
+    shell: /bin/zsh
+    ssh: true
