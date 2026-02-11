@@ -12,12 +12,17 @@
   ansible.builtin.template:
     src: deploy-hook.sh
     dest: /usr/local/bin/lego-deploy-hook.sh
-    mode: '0755'
+    mode: "0755"
+    owner: root
+    group: root
 
 - name: Install systemd service for each domain
   ansible.builtin.template:
     src: lego-cert.service
     dest: "/etc/systemd/system/lego-{{ item.name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
   loop: "{{ haproxy_all_services }}"
   notify: Reload systemd
 
@@ -25,11 +30,14 @@
   ansible.builtin.template:
     src: lego-cert.timer
     dest: "/etc/systemd/system/lego-{{ item.name }}.timer"
+    owner: root
+    group: root
+    mode: "0644"
   loop: "{{ haproxy_all_services }}"
   notify: reload systemd
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Enable and start timers
   ansible.builtin.systemd:
@@ -40,22 +48,23 @@
 
 
 - name: Check if certificate already exists
-  stat:
-    path: "{{ haproxy_cert_path }}/{{ item.name }}.crt"
+  ansible.builtin.stat:
+    path: "{{ haproxy_cert_path }}/{{ item.name }}.pem"
   loop: "{{ haproxy_all_services }}"
-  register: cert_stat
+  register: haproxy_cert_stat
 
-# - name: Run initial certificate issuance for missing domains
-#   ansible.builtin.command: >
-#     lego
-#     --domains {{ item.item.name }}
-#     --path {{ haproxy_lego_path }}
-#     --http
-#     --http.port 127.0.0.1:{{ haproxy_lego_http_port }}
-#     --accept-tos
-#     --pem
-#     --email {{ haproxy_cert_email }}
-#     run
-#     --run-hook /usr/local/bin/lego-deploy-hook.sh
-#   loop: "{{ cert_stat.results }}"
-#   when: not item.stat.exists
+- name: Run initial certificate issuance for missing domains
+  ansible.builtin.command: >
+    lego
+    --domains {{ item.item.name }}
+    --path {{ haproxy_lego_path }}
+    --http
+    --http.port 127.0.0.1:{{ haproxy_lego_http_port }}
+    --accept-tos
+    --pem
+    --email {{ haproxy_cert_email }}
+    run
+    --run-hook /usr/local/bin/lego-deploy-hook.sh
+  loop: "{{ haproxy_cert_stat.results }}"
+  when: not item.stat.exists
+  changed_when: false

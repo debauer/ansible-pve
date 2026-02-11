@@ -4,6 +4,7 @@
     name:
       - haproxy
       - lego
+      - python3-cryptography
     state: present
     update_cache: true
 
@@ -26,9 +27,6 @@
   ansible.builtin.debug:
     var: haproxy_all_services
 
-- name: Include lego tasks
-  ansible.builtin.import_tasks: lego.yaml
-
 
 - name: Template Haproxy Config
   ansible.builtin.template:
@@ -40,15 +38,21 @@
   notify:
     - Reload HAProxy
 
-# - name: Generate a Self Signed Cert to make Haproxy happy
-#   community.crypto.x509_certificate:
-#     path: "{{ haproxy_cert_path }}/default.com.crt"
-#     privatekey_path: "{{ haproxy_cert_path }}/default.com.pem"
-#     csr_path: /etc/ssl/csr/ansible.com.csr
-#     provider: selfsigned
+- name: Generate a dummy self-signed cert only if none exist
+  ansible.builtin.command: >
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048
+    -keyout {{ haproxy_cert_path }}/selfsigned-default.com.pem
+    -out {{ haproxy_cert_path }}/selfsigned-default.com.crt
+    -subj "/CN=dummy-default.com"
+  args:
+    creates: "{{ haproxy_cert_path }}/selfsigned-default.com.pem"
+  become: true
 
 - name: Ensure Haproxy service is running and enabled
   ansible.builtin.systemd:
     name: haproxy
     state: started
     enabled: true
+
+- name: Include lego tasks
+  ansible.builtin.import_tasks: lego.yaml
