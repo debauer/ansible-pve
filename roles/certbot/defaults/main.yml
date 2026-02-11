@@ -1,6 +1,0 @@
----
-certbot_install_method: pip
-certbot_install_route53_plugin: true
-certbot_certs:
-certbot_route53_access_key_id:
-certbot_route53_secret_access_key:
