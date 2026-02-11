@@ -12,3 +12,9 @@ network_interfaces_interfaces:
     nat_subnet: rackmonkey
     netmask: 255.255.255.0
 proxmox_vmid: 100
+
+#duummy data
+haproxy_services:
+  - name: git.rackmonkey.de
+    IP: 10.63.10.2
+    Port: 8000

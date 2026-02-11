@@ -4,10 +4,9 @@
   gather_facts: true
   become: true
   tasks:
-    - name: Include role
-      ansible.builtin.include_role:
-        name: roles/haproxy
-    # - name: Include role
-    #   ansible.builtin.include_role:
-    #     name: roles/lego
-
+    - name: Basic roles
+      tags: basic
+      block:
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/haproxy

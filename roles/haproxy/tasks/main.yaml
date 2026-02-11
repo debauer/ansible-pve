@@ -1,22 +1,54 @@
 ---
-- name: Install haproxy
+- name: Install packages
   ansible.builtin.package:
-    name: haproxy
+    name:
+      - haproxy
+      - lego
     state: present
+    update_cache: true
 
-- name: Create Haproxy Cert Dir
+- name: Ensure haproxy cert directory exists
   ansible.builtin.file:
-    path: /etc/haproxy/certs/
+    path: "{{ haproxy_cert_path }}"
     state: directory
     owner: root
     group: root
+    mode: "0755"
+
+- name: Create haproxy_all_services fact
+  ansible.builtin.set_fact:
+    haproxy_all_services: >-
+      {{ haproxy_all_services | default([]) +
+          (hostvars[item].haproxy_services | default([])) }}
+  loop: "{{ groups['all'] }}"
+
+- name: Show aggregated services
+  ansible.builtin.debug:
+    var: haproxy_all_services
+
+- name: Include lego tasks
+  ansible.builtin.import_tasks: lego.yaml
+
 
 - name: Template Haproxy Config
   ansible.builtin.template:
-    src: haproxy.cfg.j2
+    src: haproxy.cfg
     dest: /etc/haproxy/haproxy.cfg
     owner: root
     group: root
     mode: "0644"
+  notify:
+    - Reload HAProxy
 
+# - name: Generate a Self Signed Cert to make Haproxy happy
+#   community.crypto.x509_certificate:
+#     path: "{{ haproxy_cert_path }}/default.com.crt"
+#     privatekey_path: "{{ haproxy_cert_path }}/default.com.pem"
+#     csr_path: /etc/ssl/csr/ansible.com.csr
+#     provider: selfsigned
 
+- name: Ensure Haproxy service is running and enabled
+  ansible.builtin.systemd:
+    name: haproxy
+    state: started
+    enabled: true

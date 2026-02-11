@@ -1,11 +1,12 @@
 ---
 
+#dummy data
+haproxy_services:
+  - name: proxy.rackmonkey.de
+    IP: 127.0.0.1
+    Port: 9999
 
-lego_certs:
-  - domains:
-      - proxy.rackmonkey.de
-  - domains:
-      - test.rackmonkey.de
+
 dns_inwx_cname:
   - domain: rackmonkey.de
     records:

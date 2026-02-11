@@ -1,0 +1,14 @@
+haproxy_cert_email: "admin@example.com"
+
+
+haproxy_lego_path: /etc/lego
+haproxy_cert_path: /etc/haproxy/certs
+haproxy_lego_http_port: 8888
+haproxy_stats_admin_user: ""
+haproxy_stats_admin_user_password: ""
+haproxy_stats_enable: true
+
+# haproxy_services:
+#  - name: proxy.yolo.de
+#    IP: 127.0.0.1
+#    Port: 9999

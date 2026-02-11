@@ -1,0 +1,24 @@
+---
+- name: "Check HAProxy configuration file"
+  ansible.builtin.command:
+    cmd: "/usr/sbin/haproxy -c -q -f /etc/haproxy/haproxy.cfg"
+  register: "haproxy__check_haproxy_config"
+  changed_when: false
+  failed_when: "haproxy__check_haproxy_config.rc != 0"
+
+- name: "Restart HAProxy"
+  become: true
+  ansible.builtin.service:
+    name: haproxy
+    state: "restarted"
+
+
+- name: "Reload HAProxy"
+  become: true
+  ansible.builtin.service:
+    name: haproxy
+    state: "reloaded"
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

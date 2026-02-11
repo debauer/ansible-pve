@@ -1,0 +1,23 @@
+[Unit]
+Description=Lego certificate for {{ item.name }}
+After=network.target
+
+[Service]
+Type=oneshot
+
+ExecStart=lego \
+  --email {{ haproxy_cert_email }} \
+  --domains {{ item.name }} \
+  --path {{ haproxy_lego_path }} \
+  --http \
+  --http.port 127.0.0.1:{{ haproxy_lego_http_port }} \
+  --accept-tos \
+  --pem \
+  renew
+  --renew-hook /usr/local/bin/lego-deploy-hook.sh \
+
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
