@@ -1,0 +1,21 @@
+---
+# Instead of login with password, proxmox supports api token authentication since release 6.2.
+plugin: community.proxmox.proxmox
+url: https://pve.rackmonkey.de:8006
+user: debauer@pve
+token_id: ansible
+token_secret: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66393439663136663137373635393065623032313164343034366464336162623534376534623064
+          3632643762623862343936363932386234303562393932300a373366376161313435663739366330
+          31373361613661653537616437383130346664366538343132636363623535326331393737353634
+          6635323336343635650a646166393339313561646338396462343237316637316565383463323961
+          62636662353139313939346262613433383436346261343230333636396331666430653564383864
+          3761633736323966653631623636333931306431643034613161
+want_facts: true
+validate_certs: false
+want_proxmox_nodes_ansible_host: true
+
+compose:
+  ansible_port: 22 if 'public_ip' in (proxmox_tags_parsed|list) else (10000 + proxmox_vmid) | default(22)
+  ansible_host: proxy.rackmonkey.de if proxmox_vmid is defined and 'public_ip' not in (proxmox_tags_parsed|list) else inventory_hostname
