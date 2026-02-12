@@ -32,17 +32,20 @@
         - name: Include role
           ansible.builtin.include_role:
             name: roles/user/user_add
-          when: users is defined
+          when:
+            - (users | default([]) | length > 0) or (users_host | default([]) | length > 0)
 
         - name: Include role
           ansible.builtin.include_role:
             name: roles/user/user_secure
-          when: users is defined
+          when:
+            - (users | default([]) | length > 0) or (users_host | default([]) | length > 0)
 
         - name: Include role
           ansible.builtin.include_role:
             name: roles/user/user_ssh_keys
-          when: users is defined
+          when:
+            - (users | default([]) | length > 0) or (users_host | default([]) | length > 0)
 
         - name: Include role
           ansible.builtin.include_role:

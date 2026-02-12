@@ -1,4 +1,20 @@
 ---
+- name: Merge global and host-specific users
+  ansible.builtin.set_fact:
+    user_add_users_effective: >-
+      {{
+        (
+          dict((users | default([]) | map(attribute='name') | zip(users | default([]))))
+          | combine(
+              dict((users_host | default([]) | map(attribute='name') | zip(users_host | default([])))),
+              recursive=True
+          )
+        )
+        | dict2items
+        | map(attribute='value')
+        | list
+      }}
+
 - name: Include_tasks add_user
   ansible.builtin.include_tasks: add_user.yml
   vars:
@@ -9,7 +25,7 @@
     user_shell: "{{ user_config.shell | default('/bin/bash') }}"
   loop_control:
     loop_var: user_config
-  with_items: "{{ users }}"
+  with_items: "{{ user_add_users_effective }}"
   when:
-    - users is defined
+    - user_add_users_effective | length > 0
     - user_config.name != "root"

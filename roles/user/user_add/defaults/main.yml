@@ -1,3 +1,4 @@
 ---
 users: []  # noqa: var-naming[no-role-prefix]
+users_host: []  # noqa: var-naming[no-role-prefix]
 user_default_groups: []
