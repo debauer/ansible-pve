@@ -10,6 +10,18 @@
   when:
     - ansible_facts['os_family'] == "Archlinux"
 
+- name: Disable Root Login
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PermitRootLogin"
+    line: "PermitRootLogin no"
+    state: present
+    backup: "yes"
+  notify: Restart ssh
+  when:
+    - ansible_facts['os_family'] == "Debian"
+
+
 - name: Disable Password Authentication
   ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config

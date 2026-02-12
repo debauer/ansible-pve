@@ -1,0 +1,16 @@
+# Fail2Ban local configuration
+
+[DEFAULT]
+bantime = 3600
+findtime = 600
+maxretry = 5
+
+{% for jail, settings in fail2ban_jails.items() %}
+[{{ jail }}]
+enabled = {{ settings.enabled | default(true) }}
+port    = {{ settings.port | default('ssh') }}
+filter  = {{ settings.filter | default(jail) }}
+logpath = {{ settings.logpath | default('/var/log/auth.log') }}
+maxretry = {{ settings.maxretry | default(5) }}
+
+{% endfor %}

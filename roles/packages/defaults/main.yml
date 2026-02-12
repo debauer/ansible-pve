@@ -1,19 +1,31 @@
 ---
 packages_common:
   - sudo # proxmox hat kein sudo :-(
-  - htop
-  - iotop
   - make
   - wget
-  - curl
-  - git
   - gzip
-  - unzip
-  - rsync
   - tree
-  - etckeeper
   - net-tools
   - vim
+  - rsyslog
+  - curl
+  - dnsutils
+  - etckeeper
+  - git
+  - htop
+  - iftop
+  - iotop
+  - less
+  - libpam-systemd
+  - lsof
+  - mtr-tiny
+  - multitail
+  - ncdu
+  - rsync
+  - tig
+  - tmux
+  - unzip
+
 packages_additional: []
 packages_remove: []
 packages_pip_install: false

@@ -1,0 +1,7 @@
+---
+- name: Restart Networking
+  ansible.builtin.systemd:
+    name: networking
+    state: restarted
+    enabled: true
+    daemon_reload: true

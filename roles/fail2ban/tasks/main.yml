@@ -1,0 +1,28 @@
+---
+- name: "Check if fail2ban should be enabled"
+  ansible.builtin.debug:
+    msg: "Fail2Ban installation is skipped because fail2ban_enable is false"
+  when: not fail2ban_enable
+
+- name: "Install Fail2Ban"
+  ansible.builtin.package:
+    name: fail2ban
+    state: present
+  when: fail2ban_enable
+
+- name: "Ensure Fail2Ban service is enabled and running"
+  ansible.builtin.service:
+    name: fail2ban
+    enabled: true
+    state: started
+  when: fail2ban_enable
+
+- name: "Deploy Fail2Ban jail configuration"
+  ansible.builtin.template:
+    src: jail.local
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart fail2ban
+  when: fail2ban_enable

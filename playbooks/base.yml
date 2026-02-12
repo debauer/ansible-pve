@@ -50,3 +50,13 @@
           when:
             - user_zsh is defined
             - user_zsh is truthy
+
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/fail2ban
+
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/apt
+          when:
+            - ansible_facts['os_family'] == "Debian"

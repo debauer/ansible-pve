@@ -11,10 +11,4 @@
     dest: "{{ network_interfaces_file }}"
     mode: "0644"
     backup: true
-
-- name: Restart networking service to apply changes
-  ansible.builtin.systemd:
-    name: networking
-    state: restarted
-    enabled: true
-    daemon_reload: true
+  notify: Restart Networking

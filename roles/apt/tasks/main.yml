@@ -1,0 +1,47 @@
+---
+- name: Install needed packages for apt
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gpg
+      - gpg-agent
+    state: present
+
+- name: Disable "Install Recommends" Setting
+  ansible.builtin.copy:
+    src: 05recommends
+    dest: /etc/apt/apt.conf.d/05recommends
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Add Backports Repository (Not used by Default)
+  ansible.builtin.apt_repository:
+    repo: 'deb http://httpredir.debian.org/debian {{ ansible_distribution_release }}-backports main contrib non-free'
+    update_cache: true
+
+
+- name: Install apt-tools
+  ansible.builtin.apt:
+    name:
+      - apt-listchanges
+      - debconf-utils
+      - debian-goodies
+      - unattended-upgrades
+    state: present
+
+- name: Configure apt-listchanges
+  ansible.builtin.copy:
+    src: "listchanges.conf"
+    dest: "/etc/apt/listchanges.conf"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure unattended-upgrades
+  ansible.builtin.copy:
+    src: "20auto-upgrades"
+    dest: "/etc/apt/apt.conf.d/20auto-upgrades"
+    owner: root
+    group: root
+    mode: "0644"
