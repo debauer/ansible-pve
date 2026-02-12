@@ -11,7 +11,7 @@
       block:
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/basic_setup
+            name: roles/basic_motd
 
         - name: Include role
           ansible.builtin.include_role:

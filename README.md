@@ -36,7 +36,7 @@ ansible-playbook -i inventory/hosts.yml playbooks/base.yml
 
 ## Roles (high level)
 
-- `basic_setup`: MOTD + hostname setup.
+- `basic_motd`: MOTD + hostname setup.
 - `update`: System updates.
 - `packages`: Common packages.
 - `network_interfaces`: Interface configuration for non-OpenWrt hosts.

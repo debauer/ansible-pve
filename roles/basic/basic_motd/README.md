@@ -1,4 +1,4 @@
-# basic_setup Role
+# basic_motd Role
 
 Sets up a customized MOTD on Debian hosts and ensures a clean baseline for login
 messages.
@@ -14,7 +14,7 @@ messages.
 
 ## Templates
 
-Located in `roles/basic_setup/templates/`:
+Located in `roles/basic_motd/templates/`:
 
 - `20-header`
 - `30-sysinfo`

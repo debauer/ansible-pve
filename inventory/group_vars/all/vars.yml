@@ -12,7 +12,7 @@ user_zsh: true
 users:
   - authorized_keys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILZIcGOqCoTrLbCg06e3HYHwweskvvdPK+w81LlHmHvM debauer@bauer-t14s
-      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDwzwboGpAFHjhezJWFu/I3ERf2mWMQYMc/4N8yn9h1l 
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDwzwboGpAFHjhezJWFu/I3ERf2mWMQYMc/4N8yn9h1l
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPCmpZ0IZG91e4q6+c0jtgJ62JvE8JbumXLRtpp86/yv
     groups:
       - wheel
@@ -27,10 +27,23 @@ users:
     shell: /bin/zsh
     ssh: true
   - authorized_keys:
-      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDwzwboGpAFHjhezJWFu/I3ERf2mWMQYMc/4N8yn9h1l 
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDwzwboGpAFHjhezJWFu/I3ERf2mWMQYMc/4N8yn9h1l
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPCmpZ0IZG91e4q6+c0jtgJ62JvE8JbumXLRtpp86/yv
     groups:
       - wheel
     name: korkenzieher
     shell: /bin/zsh
     ssh: true
+
+pve_bridge:
+  br-uplink:
+    public: true
+    networks:
+      - 138.201.133.94/32
+      - 138.201.133.98/32
+      - 138.201.133.99/32
+  br-internal:
+    public: false
+    proxy: proxy.rackmonkey.de
+    networks:
+      - 10.63.13.0/24
