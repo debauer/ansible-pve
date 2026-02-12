@@ -1,1 +1,45 @@
 ---
+gitlab_external_scheme: https
+gitlab_domain: "{{ inventory_hostname }}"
+gitlab_external_url: "{{ gitlab_external_scheme }}://{{ gitlab_domain }}"
+
+gitlab_edition: ce
+gitlab_package_state: present
+gitlab_repo_base_url: "https://packages.gitlab.com/gitlab/gitlab-{{ gitlab_edition }}"
+gitlab_repo_distribution: "{{ ansible_distribution_release }}"
+gitlab_repo_component: main
+gitlab_repo_key_url: "{{ gitlab_repo_base_url }}/gpgkey"
+gitlab_repo_keyring_path: "/usr/share/keyrings/gitlab-{{ gitlab_edition }}-archive-keyring.gpg"
+gitlab_repo_apt_entry: >-
+  deb [signed-by={{ gitlab_repo_keyring_path }}]
+  {{ gitlab_repo_base_url }}/debian/
+  {{ gitlab_repo_distribution }}
+  {{ gitlab_repo_component }}
+
+gitlab_manage_service: true
+gitlab_service_name: gitlab-runsvdir
+
+gitlab_letsencrypt_enable: false
+gitlab_nginx_listen_port: 443
+gitlab_nginx_listen_https: true
+gitlab_nginx_ssl_certificate: "/etc/letsencrypt/live/{{ gitlab_domain }}/fullchain.pem"
+gitlab_nginx_ssl_certificate_key: "/etc/letsencrypt/live/{{ gitlab_domain }}/privkey.pem"
+
+gitlab_registry_enable: false
+gitlab_registry_domain: "registry.{{ gitlab_domain }}"
+gitlab_registry_external_url: "{{ gitlab_external_scheme }}://{{ gitlab_registry_domain }}"
+gitlab_registry_path: "/var/opt/gitlab/gitlab-rails/shared/registry"
+gitlab_registry_nginx_ssl_certificate: "/etc/letsencrypt/live/{{ gitlab_registry_domain }}/fullchain.pem"
+gitlab_registry_nginx_ssl_certificate_key: "/etc/letsencrypt/live/{{ gitlab_registry_domain }}/privkey.pem"
+
+gitlab_smtp_enable: false
+gitlab_smtp_address: smtp.example.com
+gitlab_smtp_port: 465
+gitlab_smtp_user_name: ""
+gitlab_smtp_password: ""
+gitlab_smtp_domain: "{{ gitlab_domain }}"
+gitlab_smtp_authentication: login
+gitlab_smtp_enable_starttls_auto: true
+gitlab_smtp_openssl_verify_mode: peer
+gitlab_smtp_email_from: "gitlab@{{ gitlab_domain }}"
+gitlab_smtp_email_reply_to: "noreply@{{ gitlab_domain }}"

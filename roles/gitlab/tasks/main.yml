@@ -1,13 +1,75 @@
 ---
-- name: Copy files to target | {{ config.name }}
-  ansible.builtin.template:
-    src: "{{ item }}"
-    dest: "/etc/gitlab/{{ item }}"
+- name: Validate target OS
+  ansible.builtin.assert:
+    that:
+      - ansible_facts["os_family"] == "Debian"
+      - ansible_facts["distribution"] == "Debian"
+    fail_msg: This role currently supports Debian only.
+
+- name: Validate Debian release
+  ansible.builtin.assert:
+    that:
+      - ansible_facts["distribution_major_version"] | int >= 13
+    fail_msg: This role requires Debian 13 (Trixie) or newer.
+
+- name: Install apt prerequisites
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gpg
+      - openssh-server
+      - tzdata
+      - perl
+    state: present
+    update_cache: true
+
+- name: Ensure apt keyring directory exists
+  ansible.builtin.file:
+    path: /usr/share/keyrings
+    state: directory
     owner: root
     group: root
-    mode: "{{ item.mode | default(600) }}"
-  become: true
-  with_items:
-    - gitlab.rb
-  notify: Gitlab reconfigure
-  when: gitlab_domain is defined
+    mode: "0755"
+
+- name: Download GitLab repository key
+  ansible.builtin.get_url:
+    url: "{{ gitlab_repo_key_url }}"
+    dest: "{{ gitlab_repo_keyring_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+    force: true
+
+- name: Configure GitLab apt repository
+  ansible.builtin.apt_repository:
+    repo: "{{ gitlab_repo_apt_entry }}"
+    filename: "gitlab-{{ gitlab_edition }}"
+    state: present
+    update_cache: true
+
+- name: Install GitLab package
+  ansible.builtin.apt:
+    name: "gitlab-{{ gitlab_edition }}"
+    state: "{{ gitlab_package_state }}"
+  environment:
+    EXTERNAL_URL: "{{ gitlab_external_url }}"
+
+- name: Configure /etc/gitlab/gitlab.rb
+  ansible.builtin.template:
+    src: gitlab.rb
+    dest: /etc/gitlab/gitlab.rb
+    owner: root
+    group: root
+    mode: "0600"
+  notify:
+    - Gitlab reconfigure
+    - Restart gitlab
+
+- name: Ensure GitLab service is enabled and running
+  ansible.builtin.service:
+    name: "{{ gitlab_service_name }}"
+    enabled: true
+    state: started
+  when: gitlab_manage_service

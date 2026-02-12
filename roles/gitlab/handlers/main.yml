@@ -2,4 +2,9 @@
 - name: Gitlab reconfigure
   ansible.builtin.command:
     cmd: gitlab-ctl reconfigure
-  changed_when: false
+  changed_when: true
+
+- name: Restart gitlab
+  ansible.builtin.service:
+    name: "{{ gitlab_service_name }}"
+    state: restarted

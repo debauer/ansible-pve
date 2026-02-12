@@ -1,37 +1,33 @@
-letsencrypt['enable'] = false
+letsencrypt['enable'] = {{ gitlab_letsencrypt_enable | bool | lower }}
 
-external_url 'https://{{ gitlab_domain }}'
-nginx['listen_port'] = 443
-nginx['listen_https'] = true
+external_url '{{ gitlab_external_url }}'
+nginx['listen_port'] = {{ gitlab_nginx_listen_port }}
+nginx['listen_https'] = {{ gitlab_nginx_listen_https | bool | lower }}
+nginx['ssl_certificate'] = '{{ gitlab_nginx_ssl_certificate }}'
+nginx['ssl_certificate_key'] = '{{ gitlab_nginx_ssl_certificate_key }}'
 
-
-registry['enable'] = true
-registry_external_url 'https://{{ gitlab_registry_domain }}'
-
-### Settings used by GitLab application
+registry['enable'] = {{ gitlab_registry_enable | bool | lower }}
+{% if gitlab_registry_enable %}
+registry_external_url '{{ gitlab_registry_external_url }}'
 gitlab_rails['registry_enabled'] = true
-gitlab_rails['registry_host'] = "{{ gitlab_registry_domain }}"
-#gitlab_rails['registry_port'] = "5000"
-gitlab_rails['registry_path'] = "/var/opt/gitlab/gitlab-rails/shared/registry"
+gitlab_rails['registry_host'] = '{{ gitlab_registry_domain }}'
+gitlab_rails['registry_path'] = '{{ gitlab_registry_path }}'
+registry_nginx['ssl_certificate'] = '{{ gitlab_registry_nginx_ssl_certificate }}'
+registry_nginx['ssl_certificate_key'] = '{{ gitlab_registry_nginx_ssl_certificate_key }}'
+{% else %}
+gitlab_rails['registry_enabled'] = false
+{% endif %}
 
-
-nginx['ssl_certificate'] = "/etc/letsencrypt/live/{{ gitlab_domain }}/fullchain.pem"
-nginx['ssl_certificate_key'] = "/etc/letsencrypt/live/{{ gitlab_domain }}/privkey.pem"
-registry_nginx['ssl_certificate'] = "/etc/letsencrypt/live/{{ gitlab_registry_domain }}/fullchain.pem"
-registry_nginx['ssl_certificate_key'] = "/etc/letsencrypt/live/{{ gitlab_registry_domain }}/privkey.pem"
-
-
-gitlab_rails['smtp_enable'] = true
-gitlab_rails['smtp_address'] = "{{ gitlab_smtp_address }}"
-gitlab_rails['smtp_port'] = "{{ gitlab_smtp_port | default('465')}}"
-gitlab_rails['smtp_user_name'] = "{{ gitlab_smtp_user_name }}"
-gitlab_rails['smtp_password'] = "{{ gitlab_smtp_password }}"
-gitlab_rails['smtp_domain'] = "{{ gitlab_smtp_domain }}"
-gitlab_rails['smtp_authentication'] = "login"
-gitlab_rails['smtp_enable_starttls_auto'] = true
-gitlab_rails['smtp_openssl_verify_mode'] = 'peer'
-
-# If your SMTP server does not like the default 'From: gitlab@localhost' you
-# can change the 'From' with this setting.
-gitlab_rails['gitlab_email_from'] = "{{ gitlab_smtp_email_from }}"
-gitlab_rails['gitlab_email_reply_to'] = "{{ gitlab_smtp_email_reply_to }}"
+gitlab_rails['smtp_enable'] = {{ gitlab_smtp_enable | bool | lower }}
+{% if gitlab_smtp_enable %}
+gitlab_rails['smtp_address'] = '{{ gitlab_smtp_address }}'
+gitlab_rails['smtp_port'] = {{ gitlab_smtp_port | int }}
+gitlab_rails['smtp_user_name'] = '{{ gitlab_smtp_user_name }}'
+gitlab_rails['smtp_password'] = '{{ gitlab_smtp_password }}'
+gitlab_rails['smtp_domain'] = '{{ gitlab_smtp_domain }}'
+gitlab_rails['smtp_authentication'] = '{{ gitlab_smtp_authentication }}'
+gitlab_rails['smtp_enable_starttls_auto'] = {{ gitlab_smtp_enable_starttls_auto | bool | lower }}
+gitlab_rails['smtp_openssl_verify_mode'] = '{{ gitlab_smtp_openssl_verify_mode }}'
+gitlab_rails['gitlab_email_from'] = '{{ gitlab_smtp_email_from }}'
+gitlab_rails['gitlab_email_reply_to'] = '{{ gitlab_smtp_email_reply_to }}'
+{% endif %}
