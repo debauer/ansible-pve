@@ -12,11 +12,11 @@ network_interfaces_interfaces:
     comment: uplink bridge
     gateway: 138.201.133.65
     mode: static
-    name: vmbr0
+    name: bridge-uplink
     ports: enp0s31f6
   - address: 2a01:4f8:172:30ad::1/64
     mode: static
-    name: vmbr0
+    name: bridge-uplink
     protocol: inet6
     gateway: fe80::1
   - address: 10.63.13.1/24
@@ -26,4 +26,4 @@ network_interfaces_interfaces:
     bridge_stp: off
     comment: bridge internal for shared services
     mode: static
-    name: vmbr1
+    name: bridge-internal

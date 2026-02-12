@@ -8,3 +8,63 @@
     - name: Include role
       ansible.builtin.include_role:
         name: roles/network_interfaces
+
+    - name: Install nftables
+      ansible.builtin.package:
+        name: nftables
+        state: present
+
+    - name: Deploy inline nftables config
+      ansible.builtin.copy:
+        dest: /etc/nftables.conf
+        mode: "0755"
+        owner: root
+        group: root
+        content: |
+          flush ruleset
+
+          # ---------------------
+          # NAT table
+          # ---------------------
+          table ip nat {
+              chain postrouting {
+                  type nat hook postrouting priority 100;
+                  # Only NAT LAN subnet through WAN
+                  oif "bridge-uplink" ip saddr 10.63.13.0/24 masquerade
+              }
+          }
+
+          # ---------------------
+          # Filter table
+          # ---------------------
+          table ip filter {
+              chain forward {
+                  type filter hook forward priority 0;
+                  policy drop
+
+                  # Allow LAN -> WAN traffic for NATed subnet
+                  iif "bridge-internal" oif "bridge-uplink" ip saddr 10.63.13.0/24 accept
+
+                  # Allow replies from WAN -> LAN
+                  iif "bridge-uplink" oif "bridge-internal" ct state related,established accept
+
+                  # Allow traffic for public IP VMs (passthrough)
+                  iif "bridge-uplink" oif "bridge-uplink" accept
+
+                  # LOG and DROP everything else
+                  counter log prefix "NFT DROP: " drop
+              }
+          }
+
+    - name: Ensure IP forwarding enabled
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        state: present
+        reload: true
+
+    - name: Enable nftables service
+      ansible.builtin.systemd:
+        name: nftables
+        enabled: true
+        state: started
