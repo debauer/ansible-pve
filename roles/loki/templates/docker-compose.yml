@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+services:
+  loki:
+    user: "0:0"
+    image: docker.io/grafana/loki:3.5.3
+    container_name: loki
+    networks:
+      - external
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+      - ./loki-data:/loki:z
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.loki.entrypoints=websecure
+      - traefik.http.routers.loki.middlewares=lokiAuth
+      - traefik.http.middlewares.lokiAuth.basicauth.users=admin:{{ prometheus_dashboard_password | password_hash('bcrypt', salt=loki_dashboard_salt, rounds=5, ident='2y') | replace('$', '$$') }}
+      - traefik.http.routers.loki.rule=Host(`{{ loki_fqdn }}`)
+      - traefik.http.services.loki.loadbalancer.server.port=3100
+      - traefik.docker.network=external
+
+networks:
+    external:
+        external: true

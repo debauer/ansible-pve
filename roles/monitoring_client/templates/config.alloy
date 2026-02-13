@@ -1,0 +1,80 @@
+// {{ ansible_managed }}
+logging {
+  level = "warn"
+}
+
+prometheus.exporter.unix "default" {
+  include_exporter_metrics = true
+  textfile {
+    directory = "/var/lib/prometheus/node-exporter/"
+  }
+  filesystem {
+    mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/.+)($|/)"
+  }
+}
+
+
+
+prometheus.scrape "default" {
+  targets = array.concat(
+    prometheus.exporter.unix.default.targets,
+    [{
+      // Self-collect metrics
+      job         = "alloy",
+      __address__ = "127.0.0.1:12345",
+    }],
+  )
+  scrape_interval = "15s"
+
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+prometheus.remote_write "default" {
+    endpoint {
+      write_relabel_config {
+      target_label = "instance"
+      replacement  = constants.hostname
+      }
+      url = "https://{{ prometheus_fqdn }}/api/v1/write"
+
+      basic_auth {
+        username = "admin"
+        password = "{{ prometheus_dashboard_password }}"
+      }
+    }
+}
+
+loki.write "default" {
+    endpoint {
+        url = "https://{{ loki_fqdn }}/loki/api/v1/push"
+        basic_auth {
+            username = "admin"
+            password = "{{ prometheus_dashboard_password }}"
+        }
+    }
+}
+loki.relabel "journal" {
+  forward_to = []
+
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit"
+  }
+  rule {
+    source_labels = ["__journal__hostname"]
+    target_label  = "hostname"
+  }
+}
+
+loki.source.journal "read"  {
+  forward_to    = [loki.write.default.receiver]
+  relabel_rules = loki.relabel.journal.rules
+}
+
+loki.relabel "default" {
+    forward_to = [loki.write.default.receiver]
+
+    rule {
+        target_label = "hostname"
+        replacement  = constants.hostname
+    }
+}

@@ -1,0 +1,11 @@
+groups:
+- name: Restic
+  rules:
+  - alert: HostBackupToOld
+    expr: ((time() - restic_snapshot_timestamp{name="daily"} /1000) )/60/60 > 24
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: Backup on Instance {{ $labels.instance }} is to old 
+      description: "Backup on {{ $labels.instance }} is to old."

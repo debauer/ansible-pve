@@ -1,0 +1,70 @@
+---
+
+
+- name: Install Grafana Apt Package Repo
+  ansible.builtin.deb822_repository:
+    name: grafana
+    types: deb
+    uris: https://apt.grafana.com
+    components: main
+    suites: stable
+    architectures: arm64
+    signed_by: https://apt.grafana.com/gpg.key
+  when: ansible_os_family == "Debian"
+
+- name: Install apt Alloy
+  ansible.builtin.apt:
+    name:
+      - alloy
+      - prometheus-node-exporter-collectors
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+- name: Create Alloy Config Folder
+  ansible.builtin.file:
+    path: /etc/alloy
+    owner: alloy
+    group: alloy
+    mode: '0770'
+    state: directory
+
+- name: Configure Alloy
+  ansible.builtin.template:
+    src: config.alloy
+    dest: /etc/alloy/config.alloy
+    owner: alloy
+    group: alloy
+    mode: '0644'
+  notify:
+    - Reload alloy
+
+- name: Allow Alloy to read a config Folder
+  ansible.builtin.lineinfile:
+    state: present
+    dest: /etc/default/alloy
+    regexp: '^CONFIG_FILE=.*$'
+    line: 'CONFIG_FILE="/etc/alloy/"'
+  notify:
+    - Restart alloy
+  when: ansible_os_family == "Debian"
+
+
+- name: Start alloy
+  ansible.builtin.service:
+    name: alloy
+    state: started
+    enabled: true
+
+
+
+- name: Configure Alloy for tailscale
+  ansible.builtin.template:
+    src: tailscale.alloy
+    dest: /etc/alloy/tailscale.alloy
+    owner: alloy
+    group: alloy
+    mode: '0644'
+  notify:
+    - Reload alloy
+  when: headscale_install is defined and headscale_install == true 

@@ -1,0 +1,51 @@
+---
+- name: Reload Prometheus
+  ansible.builtin.service:
+    name: prometheus
+    state: reloaded
+
+- name: Reload Loki
+  ansible.builtin.service:
+    name: loki
+    state: reloaded
+
+- name: Reload Alertmanager
+  ansible.builtin.service:
+    name: prometheus-alertmanager
+    state: reloaded
+
+- name: Reload Grafana
+  ansible.builtin.service:
+    name: grafana
+    state: reloaded
+
+- name: Reload Haproxy
+  ansible.builtin.service:
+    name: haproxy
+    state: reloaded
+
+
+- name: Restart Prometheus
+  ansible.builtin.service:
+    name: prometheus
+    state: restarted
+
+- name: Restart Loki
+  ansible.builtin.service:
+    name: loki
+    state: restarted
+
+- name: Restart Alertmanager
+  ansible.builtin.service:
+    name: prometheus-alertmanager
+    state: restarted
+
+- name: Restart Grafana
+  ansible.builtin.service:
+    name: grafana
+    state: restarted
+
+- name: Restart Haproxy
+  ansible.builtin.service:
+    name: haproxy
+    state: restarted

@@ -1,0 +1,6 @@
+prometheus.scrape "local_tailscale" {
+  targets = [
+    { "__address__" = "100.100.100.100",instance=constants.hostname, },
+  ]
+  forward_to = [prometheus.remote_write.default.receiver]
+}

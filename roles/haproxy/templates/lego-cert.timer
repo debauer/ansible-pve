@@ -1,5 +1,5 @@
 [Unit]
-Description=Renew Lego certificate for {{ item.name }}
+Description=Renew Lego certificate for {{ service_name }}
 
 [Timer]
 OnCalendar=daily

@@ -1,0 +1,69 @@
+groups:
+- name: Alloy
+  rules:
+  - alert: AlloyScrapeTargetDown
+    expr: |
+      (
+        count by (instance, environment) (up{job=~"alloy-.*"} == 0) 
+        / 
+        count by (instance, environment) (up{job=~"alloy-.*"})
+      ) > 0.5
+    for: 5m
+    labels:
+      severity: warning
+      component: alloy
+      alert_type: scrape_failure
+    annotations:
+      summary: "High scrape failure rate for Alloy instance {{ $labels.instance }}"
+      description: |
+        More than 50% of scrape targets for Alloy instance {{ $labels.instance }}
+        in {{ $labels.environment }} are failing.
+        
+        This might indicate configuration issues or target availability problems.
+
+  - alert: AlloyConfigReloadFailed
+    expr: increase(alloy_config_load_errors_total[10m]) > 0
+    for: 0m
+    labels:
+      severity: warning
+      component: alloy
+      alert_type: config_error
+    annotations:
+      summary: "Alloy configuration reload failed on {{ $labels.instance }}"
+      description: |
+        Alloy instance {{ $labels.instance }} failed to reload its configuration.
+        
+        Error count in last 10 minutes: {{ $value }}
+        
+        Check the Alloy logs for detailed error messages.
+
+  - alert: AlloyHighMemoryUsage
+    expr: |
+      (
+        process_resident_memory_bytes{job="alloy-self-monitoring"} 
+        / 1024 / 1024 / 1024
+      ) > 2
+    for: 10m
+    labels:
+      severity: warning
+      component: alloy
+      alert_type: resource_usage
+    annotations:
+      summary: "High memory usage on Alloy instance {{ $labels.instance }}"
+      description: |
+        Alloy instance {{ $labels.instance }} is using {{ $value | humanize }}GB of memory,
+        which is above the 2GB threshold.
+        
+        This might indicate a memory leak or high cardinality metrics.
+
+  - alert: Alloy Down
+    expr: count(count_over_time(up[24h])) by (instance) unless count(count_over_time(up[3m])) by (instance)
+    labels:
+      severity: critical
+      component: alloy
+    annotations:
+      summary: "Alloy heartbeat missing from {{ $labels.instance }}"
+      description: |
+        No heartbeat metrics received from Alloy instance {{ $labels.instance }}
+        for more than 3 minutes. This indicates the instance may be completely down
+        or unable to collect system metrics.

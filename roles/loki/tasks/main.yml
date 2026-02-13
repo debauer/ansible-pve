@@ -1,0 +1,42 @@
+---
+- name: Create loki Folder
+  ansible.builtin.file:
+    path: "/opt/loki"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Docker compose for loki
+  ansible.builtin.template:
+    dest: "/opt/loki/docker-compose.yml"
+    src: "docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Restart loki
+
+- name: Create loki data Folder
+  ansible.builtin.file:
+    path: "/opt/loki/loki-data/"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Upload loki Config
+  ansible.builtin.template:
+    dest: "/opt/loki/loki-config.yaml"
+    src: "loki-config.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Restart loki
+
+- name: Make sure a service unit is running
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: docker-compose@loki

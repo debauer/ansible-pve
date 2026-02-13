@@ -1,0 +1,30 @@
+---
+dns_inwx_cname:
+  - domain: rackmonkey.de
+    records:
+      - monitoring
+      - alertmanager
+      - prometheus
+      - loki
+      - grafana
+    type: CNAME
+    value: proxy.rackmonkey.de
+
+
+haproxy_services:
+  - name: monitoring.rackmonkey.de
+    IP: 10.63.13.3
+    Port: 8000
+  - name: prometheus.rackmonkey.de
+    IP: 10.63.13.3
+    Port: 9090
+  - name: loki.rackmonkey.de
+    IP: 10.63.13.3
+    Port: 3100
+  - name: alertmanager.rackmonkey.de
+    IP: 10.63.13.3
+    Port: 9093
+
+
+
+ansible_ssh_common_args: '-o ProxyCommand="openssl s_client -quiet -connect proxy.rackmonkey.de:1022 -servername 10.63.13.3"'

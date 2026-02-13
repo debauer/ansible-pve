@@ -23,6 +23,8 @@
     owner: root
     group: root
     mode: "0644"
+  vars:
+    service_name: "{{ item.name }}"
   loop: "{{ haproxy_all_services }}"
   notify: Reload systemd
 
@@ -33,8 +35,10 @@
     owner: root
     group: root
     mode: "0644"
+  vars:
+    service_name: "{{ item.name }}"
   loop: "{{ haproxy_all_services }}"
-  notify: reload systemd
+  notify: Reload systemd
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
@@ -67,4 +71,5 @@
     --run-hook /usr/local/bin/lego-deploy-hook.sh
   loop: "{{ haproxy_cert_stat.results }}"
   when: not item.stat.exists
-  changed_when: false
+  args:
+    creates: "{{ haproxy_cert_path }}/{{ item.item.name }}.pem"

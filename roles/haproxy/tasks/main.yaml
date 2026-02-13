@@ -42,7 +42,7 @@
   ansible.builtin.command: >
     openssl req -x509 -nodes -days 365 -newkey rsa:2048
     -keyout {{ haproxy_cert_path }}/selfsigned-default.com.pem
-    -out {{ haproxy_cert_path }}/selfsigned-default.com.crt
+    -out {{ haproxy_cert_path }}/selfsigned-default.com.pem
     -subj "/CN=dummy-default.com"
   args:
     creates: "{{ haproxy_cert_path }}/selfsigned-default.com.pem"

@@ -1,0 +1,4 @@
+---
+monitoring_server_loki_all: []
+monitoring_server_alertmanager_all: []
+monitoring_server_prometheus_all: []

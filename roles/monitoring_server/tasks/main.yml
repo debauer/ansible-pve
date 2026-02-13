@@ -1,0 +1,134 @@
+---
+# install alertmanager + prometheus + haproxy
+
+
+- name: Install Grafana Apt Package Repo
+  ansible.builtin.deb822_repository:
+    name: grafana
+    types: deb
+    uris: https://apt.grafana.com
+    components: main
+    suites: stable
+    architectures: amd64
+    signed_by: https://apt.grafana.com/gpg.key
+  when: ansible_os_family == "Debian"
+
+
+- name: Install packages
+  ansible.builtin.package:
+    name:
+      - haproxy
+      - prometheus
+      - prometheus-alertmanager
+      - loki
+      - grafana
+    state: present
+    update_cache: true
+
+- name: Create Prometheus Rules Folder
+  ansible.builtin.file:
+    path: "/etc/prometheus/rules/"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Upload Prometheus Config
+  ansible.builtin.template:
+    dest: "/etc/prometheus/prometheus.yml"
+    src: "prometheus/prometheus.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload Prometheus
+
+
+- name: Configure Prometheus ARGS
+  ansible.builtin.lineinfile:
+    path: /etc/default/prometheus
+    regexp: '^ARGS='
+    line: 'ARGS="--storage.tsdb.retention.time=365d --web.enable-remote-write-receiver --web.enable-admin-api --web.listen-address=\"127.0.0.1:9090\""'
+    backrefs: false
+  notify: Restart Prometheus
+
+- name: Upload  Alert Rules
+  ansible.builtin.copy:
+    dest: "/etc/prometheus/rules/{{ item }}"
+    src: "alerts/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload Prometheus
+  loop:
+    - alert.rules
+    - alloy.rules
+    - smart.rules
+    - traefik.rules
+    - restic.rules
+
+- name: Upload Alertmanager Config
+  ansible.builtin.template:
+    dest: "/etc/prometheus/alertmanager-config.yml"
+    src: "alertmanager/alertmanager-config.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload Alertmanager
+
+- name: Configure Alertmanager ARGS
+  ansible.builtin.lineinfile:
+    path: /etc/default/prometheus-alertmanager
+    regexp: '^ARGS='
+    line: 'ARGS="--web.listen-address=\"127.0.0.1:9093\""'
+    backrefs: false
+  notify: Restart Alertmanager
+
+- name: Create Loki Storage Directory
+  ansible.builtin.file:
+    path: "/loki/"
+    state: directory
+    owner: loki
+    group: root
+    mode: "0755"
+
+- name: Create Loki Storage Sub Directories
+  ansible.builtin.file:
+    path: "/loki/{{ item }}/"
+    state: directory
+    owner: loki
+    group: root
+    mode: "0755"
+  loop:
+    - wal
+    - index
+    - cache
+    - chunks
+    - ompactor
+
+
+- name: Upload Loki Config
+  ansible.builtin.template:
+    dest: "/etc/loki/config.yml"
+    src: "loki/loki.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Restart Loki
+
+# - name: Include Grafana tasks
+#   ansible.builtin.import_tasks: grafana.yaml
+
+- name: Template Haproxy Config
+  ansible.builtin.template:
+    src: haproxy/haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload Haproxy
+

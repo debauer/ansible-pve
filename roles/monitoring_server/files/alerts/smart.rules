@@ -1,0 +1,307 @@
+groups:
+- name: SmartExporter
+  rules:
+  - alert: SmartDeviceTemperatureWarning
+    expr: '(avg_over_time(smartctl_device_temperature{temperature_type="current"} [5m]) unless on (instance, device) smartctl_device_temperature{temperature_type="drive_trip"}) > 60'
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: SMART device temperature warning (instance {{ $labels.instance }})
+      description: "Device temperature warning on {{ $labels.instance }} drive {{ $labels.device }} over 60°C\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SmartDeviceTemperatureCritical
+    expr: '(max_over_time(smartctl_device_temperature{temperature_type="current"} [5m]) unless on (instance, device) smartctl_device_temperature{temperature_type="drive_trip"}) > 70'
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SMART device temperature critical (instance {{ $labels.instance }})
+      description: "Device temperature critical on {{ $labels.instance }} drive {{ $labels.device }} over 70°C\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SmartDeviceTemperatureOverTripValue
+    expr: 'max_over_time(smartctl_device_temperature{temperature_type="current"} [10m]) >= on(device, instance) smartctl_device_temperature{temperature_type="drive_trip"}'
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SMART device temperature over trip value (instance {{ $labels.instance }})
+      description: "Device temperature over trip value on {{ $labels.instance }} drive {{ $labels.device }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SmartDeviceTemperatureNearingTripValue
+    expr: 'max_over_time(smartctl_device_temperature{temperature_type="current"} [10m]) >= on(device, instance) (smartctl_device_temperature{temperature_type="drive_trip"} * .80)'
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: SMART device temperature nearing trip value (instance {{ $labels.instance }})
+      description: "Device temperature at 80% of trip value on {{ $labels.instance }} drive {{ $labels.device }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SmartStatus
+    expr: 'smartctl_device_smart_status != 1'
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SMART status (instance {{ $labels.instance }})
+      description: "Device has a SMART status failure on {{ $labels.instance }} drive {{ $labels.device }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SmartCriticalWarning
+    expr: 'smartctl_device_critical_warning > 0'
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SMART critical warning (instance {{ $labels.instance }})
+      description: "Disk controller has critical warning on {{ $labels.instance }} drive {{ $labels.device }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SmartMediaErrors
+    expr: 'smartctl_device_media_errors > 0'
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SMART media errors (instance {{ $labels.instance }})
+      description: "Disk controller detected media errors on {{ $labels.instance }} drive {{ $labels.device }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SmartWearoutIndicator
+    expr: 'smartctl_device_available_spare < smartctl_device_available_spare_threshold'
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SMART Wearout Indicator (instance {{ $labels.instance }})
+      description: "Device is wearing out on {{ $labels.instance }} drive {{ $labels.device }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: ZfsOfflinePool
+    expr: node_zfs_zpool_state{state!="online"} > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: ZFS offline pool (instance {{ $labels.instance }})
+      description: "A ZFS zpool is in a unexpected state: {{ $labels.state }}.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+# === CORE SMART HEALTH ===
+  - alert: SmartHealthFailed
+    expr: smartctl_device_smart_status == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "SMART health check failed ({{ $labels.instance }})"
+      description: |
+        Device {{ $labels.device }} reported a failing SMART health status.
+        Immediate replacement is recommended.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartctlExitStatusError
+    expr: smartctl_device_smartctl_exit_status != 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SMARTCTL command error ({{ $labels.instance }})"
+      description: |
+        smartctl returned a non-zero exit status for {{ $labels.device }}.
+        This may indicate access issues or read errors.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartDeviceTemperatureWarning
+    expr: (avg_over_time(smartctl_device_temperature{temperature_type="current"} [5m]) unless on (instance, device) smartctl_device_temperature{temperature_type="drive_trip"}) > 60
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: SMART device temperature warning (instance {{ $labels.instance }})
+      description: "Device temperature warning on {{ $labels.instance }} drive {{ $labels.device }} over 60°C\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SmartDeviceTemperatureCritical
+    expr: (max_over_time(smartctl_device_temperature{temperature_type="current"} [5m]) unless on (instance, device) smartctl_device_temperature{temperature_type="drive_trip"}) > 70
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SMART device temperature critical (instance {{ $labels.instance }})
+      description: "Device temperature critical on {{ $labels.instance }} drive {{ $labels.device }} over 70°C\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: SmartDeviceTemperatureOverTripValue
+    expr: max_over_time(smartctl_device_temperature{temperature_type="current"} [10m]) >= on(device, instance) smartctl_device_temperature{temperature_type="drive_trip"}
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: SMART device temperature over trip value (instance {{ $labels.instance }})
+      description: "Device temperature over trip value on {{ $labels.instance }} drive {{ $labels.device }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+
+  # === NVME WEAROUT AND PERCENTAGE USED ===
+  - alert: SmartNvmeWearoutIndicatorWarning
+    expr: smartctl_device_available_spare{device=~"nvme.*"} - smartctl_device_available_spare_threshold{device=~"nvme.*"} < 5
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SMART NVMe wearout nearing threshold ({{ $labels.instance }})"
+      description: |
+        NVMe device {{ $labels.device }} available spare is close to threshold.
+        Remaining spare capacity may soon fall below safe limits.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartDeviceTemperatureNearingTripValue
+    expr: max_over_time(smartctl_device_temperature{temperature_type="current"} [10m]) >= on(device, instance) (smartctl_device_temperature{temperature_type="drive_trip"} * .80)
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: SMART device temperature nearing trip value (instance {{ $labels.instance }})
+      description: "Device temperature at 80% of trip value on {{ $labels.instance }} drive {{ $labels.device }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+
+
+
+  - alert: SmartNvmeWearoutIndicatorCritical
+    expr: smartctl_device_available_spare{device=~"nvme.*"} < smartctl_device_available_spare_threshold{device=~"nvme.*"}
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      summary: "SMART NVMe wearout threshold exceeded ({{ $labels.instance }})"
+      description: |
+        NVMe device {{ $labels.device }} has dropped below its spare threshold.
+        Drive wearout is high — replacement recommended.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartNvmeUsageWarning
+    expr: smartctl_device_percentage_used{device=~"nvme.*"} > 80
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SMART NVMe lifetime usage high ({{ $labels.instance }})"
+      description: |
+        NVMe device {{ $labels.device }} has exceeded 80% of its rated lifetime.
+        VALUE: {{ $value }}%
+        LABELS: {{ $labels }}
+
+  - alert: SmartNvmeUsageCritical
+    expr: smartctl_device_percentage_used{device=~"nvme.*"} > 95
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      summary: "SMART NVMe lifetime nearly exhausted ({{ $labels.instance }})"
+      description: |
+        NVMe device {{ $labels.device }} has used over 95% of its rated lifetime.
+        Replace soon to avoid data loss.
+        VALUE: {{ $value }}%
+        LABELS: {{ $labels }}
+
+  # === MEDIA AND LOG ERRORS ===
+  - alert: SmartDeviceErrorLogWarning
+    expr: increase(smartctl_device_error_log_count[1h]) > 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SMART device error log increasing ({{ $labels.instance }})"
+      description: |
+        Device {{ $labels.device }} recorded new SMART error logs.
+        Check for I/O or read errors.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartDeviceErrorLogCritical
+    expr: increase(smartctl_device_error_log_count[6h]) > 1
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      summary: "SMART device error log rising rapidly ({{ $labels.instance }})"
+      description: |
+        Device {{ $labels.device }} shows a strong increase in error logs.
+        Imminent failure possible — plan replacement.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartMediaErrorsWarning
+    expr: smartctl_device_media_errors > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SMART media errors detected ({{ $labels.instance }})"
+      description: |
+        Device {{ $labels.device }} has one or more media errors.
+        Possible surface or data integrity issue.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartMediaErrorsCritical
+    expr: increase(smartctl_device_media_errors[6h]) > 0
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      summary: "SMART media errors increasing ({{ $labels.instance }})"
+      description: |
+        Device {{ $labels.device }} media error count is rising.
+        Replace disk soon — degradation likely.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  # === OFFLINE UNCORRECTABLE SECTORS ===
+  - alert: SmartOfflineUncorrectableWarning
+    expr: smartmon_offline_uncorrectable_raw_value > smartmon_offline_uncorrectable_threshold
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SMART offline uncorrectable sectors detected ({{ $labels.instance }})"
+      description: |
+        Device {{ $labels.device }} has reported offline uncorrectable errors.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartOfflineUncorrectableCritical
+    expr: increase(smartmon_offline_uncorrectable_raw_value[6h]) > 0
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      summary: "SMART offline uncorrectable sectors increasing ({{ $labels.instance }})"
+      description: |
+        Device {{ $labels.device }} shows rising offline uncorrectable errors.
+        Likely read failures — replace drive.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartPowerCycleCountHigh
+    expr: smartctl_device_power_cycle_count > 20000
+    for: 30m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SMART power cycle count high ({{ $labels.instance }})"
+      description: |
+        Device {{ $labels.device }} has been power-cycled over 20,000 times.
+        Frequent cycles can accelerate wear.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
+
+  - alert: SmartPowerOnHoursOld
+    expr: smartctl_device_power_on_seconds / 3600 > 80000
+    for: 30m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SMART power-on hours high ({{ $labels.instance }})"
+      description: |
+        Device {{ $labels.device }} has been powered on for over 80,000 hours .
+        Drives of this age often show increased failure risk.
+        VALUE: {{ $value }}
+        LABELS: {{ $labels }}
