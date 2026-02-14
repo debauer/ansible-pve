@@ -25,6 +25,3 @@ haproxy_services:
     IP: 10.63.13.3
     Port: 9093
 
-
-
-ansible_ssh_common_args: '-o ProxyCommand="openssl s_client -quiet -connect proxy.rackmonkey.de:1022 -servername 10.63.13.3"'

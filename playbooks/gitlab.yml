@@ -1,4 +1,14 @@
 ---
+- name: Resolve SSH access for Proxmox guests
+  hosts: git.rackmonkey.de
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Include role
+      ansible.builtin.include_role:
+        name: roles/basic/basic_ssh_port
+
 - name: Configure GitLab
   hosts: git.rackmonkey.de
   gather_facts: true

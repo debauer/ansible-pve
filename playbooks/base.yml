@@ -1,7 +1,10 @@
 ---
+- name: Set correct ssh settings
+  import_playbook: include/ssh.yml
+
 - name: Base Playbook
   hosts: all,!meta
-  gather_facts: True
+  gather_facts: true
   become: true
 
 
@@ -11,7 +14,7 @@
       block:
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/basic_motd
+            name: roles/basic/basic_motd
 
         - name: Include role
           ansible.builtin.include_role:

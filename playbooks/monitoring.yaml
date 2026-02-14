@@ -1,4 +1,7 @@
 ---
+- name: Set correct ssh settings
+  import_playbook: include/ssh.yml
+
 - name: Configure Monitoring Backend for Rackmonkey
   hosts: monitoring.rackmonkey.de
   gather_facts: true
@@ -10,6 +13,7 @@
         - name: Include role
           ansible.builtin.include_role:
             name: roles/monitoring_server
+
 - name: Configure Monitoring Base for Clients for Rackmonkey
   hosts: all
   gather_facts: true

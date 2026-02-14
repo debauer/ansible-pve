@@ -47,3 +47,9 @@ pve_bridge:
     proxy: proxy.rackmonkey.de
     networks:
       - 10.63.13.0/24
+
+basic_ssh_port_debug: true
+ansible_python_interpreter: /usr/bin/python3
+
+basic_ssh_proxy_host: proxy.rackmonkey.de
+basic_ssh_proxy_port: 1022

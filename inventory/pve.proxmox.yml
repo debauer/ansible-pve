@@ -14,8 +14,4 @@ token_secret: !vault |
           3761633736323966653631623636333931306431643034613161
 want_facts: true
 validate_certs: false
-want_proxmox_nodes_ansible_host: true
-
-compose:
-  ansible_port: 22 if 'public_ip' in (proxmox_tags_parsed|list) else (10000 + proxmox_vmid) | default(22)
-  ansible_host: proxy.rackmonkey.de if proxmox_vmid is defined and 'public_ip' not in (proxmox_tags_parsed|list) else inventory_hostname
+#want_proxmox_nodes_ansible_host: true

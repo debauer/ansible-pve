@@ -1,0 +1,5 @@
+---
+basic_ssh_port_base_port: 10000
+basic_ssh_port_default_port: 22
+basic_ssh_port_proxy_host_default: proxy.rackmonkey.de
+basic_ssh_port_debug: false

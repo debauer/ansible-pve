@@ -40,7 +40,7 @@ ansible-playbook -i inventory/hosts.yml playbooks/base.yml
 - `update`: System updates.
 - `packages`: Common packages.
 - `network_interfaces`: Interface configuration for non-OpenWrt hosts.
-- `ssh_port_resolver`: Computes SSH port when NAT is used.
+- `basic/basic_ssh_port`: Resolves SSH host/port for internal-only Proxmox guests (`10000 + vmid` via proxy).
 - `user/*`: User management and shell config.
 - `wrt`: OpenWrt configuration templates.
 - `dns_inwx`: Sync DNS records in INWX.

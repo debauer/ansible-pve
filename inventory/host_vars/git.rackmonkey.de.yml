@@ -1,16 +1,11 @@
 ---
+ansible_user: root
 dns_inwx_cname:
   - domain: rackmonkey.de
     records:
       - git
     type: CNAME
     value: fw.rackmonkey.de
-network_interfaces_interfaces:
-  - address: 10.63.10.2
-    gateway: 10.63.10.1
-    name: eth0
-    nat_subnet: rackmonkey
-    netmask: 255.255.255.0
 proxmox_vmid: 100
 
 #duummy data
