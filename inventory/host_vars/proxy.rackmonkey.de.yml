@@ -7,9 +7,8 @@ haproxy_services:
     Port: 9999
 
 
-dns_inwx_cname:
+dns_inwx:
   - domain: rackmonkey.de
-    records:
-      - proxy
+    record: proxy
     type: A
     value: 138.201.133.94

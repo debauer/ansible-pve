@@ -1,4 +1,10 @@
 ---
+dns_inwx:
+  - domain: int.rackmonkey.de
+    record: monitoring
+    type: A
+    value: 10.63.13.3
+
 dns_inwx_cname:
   - domain: rackmonkey.de
     records:
@@ -9,6 +15,14 @@ dns_inwx_cname:
       - grafana
     type: CNAME
     value: proxy.rackmonkey.de
+  - domain: int.rackmonkey.de
+    records:
+      - alertmanager
+      - prometheus
+      - loki
+      - grafana
+    type: CNAME
+    value: monitoring.int.rackmonkey.de
 
 
 haproxy_services:

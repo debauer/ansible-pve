@@ -1,5 +1,4 @@
 ---
-ansible_user: root
 dns_inwx_cname:
   - domain: rackmonkey.de
     records:

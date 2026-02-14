@@ -5,6 +5,7 @@ atuin_dl_link: https://github.com/atuinsh/atuin/releases/download/v18.10.0/atuin
 atuin_version_string: atuin 18.10.0
 dns_inwx_managed_domains:
   - rackmonkey.de
+  - int.rackmonkey.de
 dns_inwx_zone_ignore_subdomains:
   - home
 user_sudo_without_password: true

@@ -1,0 +1,24 @@
+---
+keycloak_hostname: sso.rackmonkey.de
+
+keycloak_db_host: pg.rackmonkey.de
+keycloak_db_port: 5432
+keycloak_db_name: keycloak
+keycloak_db_user: keycloak
+keycloak_db_password: "dummy-keycloak-db-password"
+
+keycloak_admin_user: admin
+keycloak_admin_password: "dummy-keycloak-admin-password"
+
+dns_inwx_cname:
+  - domain: rackmonkey.de
+    records:
+      - sso
+    type: CNAME
+    value: proxy.rackmonkey.de
+
+dns_inwx:
+  - domain: int.rackmonkey.de
+    record: sso
+    type: A
+    value: 10.63.13.4

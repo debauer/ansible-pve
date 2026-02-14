@@ -1,0 +1,31 @@
+---
+postgres_listen_addresses: "*"
+postgres_port: 5432
+
+postgres_users:
+  - name: keycloak
+    password: "dummy-keycloak-db-password"
+
+postgres_databases:
+  - name: keycloak
+    owner: keycloak
+
+postgres_hba_rules:
+  - type: host
+    database: keycloak
+    user: keycloak
+    address: 10.63.13.0/24
+    method: scram-sha-256
+
+dns_inwx_cname:
+  - domain: rackmonkey.de
+    records:
+      - sso
+    type: CNAME
+    value: proxy.rackmonkey.de
+
+dns_inwx:
+  - domain: int.rackmonkey.de
+    record: pg
+    type: A
+    value: 10.63.13.5

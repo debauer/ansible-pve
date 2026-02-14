@@ -60,6 +60,11 @@ def main():
 
     for domain in inwx_zone["zones"]:
         for e in inwx_zone["zones"][domain]:
+            subdomain_prefix = e[0].replace(f".{domain}", "")
+            if "." in subdomain_prefix:
+                # fixes bug with sub-sub domains.
+                continue
+
             if e[1] == "A":
                 old_dns_records.append(dns_record(domain, "A", e[0].replace(f".{domain}", ""), e[2], str(e[3])))
             if e[1] == "AAAA":
