@@ -1,0 +1,8 @@
+---
+postgres_service_name: postgresql
+postgres_listen_addresses: "*"
+postgres_port: 5432
+
+postgres_users: []
+postgres_databases: []
+postgres_hba_rules: []

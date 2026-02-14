@@ -1,0 +1,171 @@
+---
+- name: Validate target OS
+  ansible.builtin.assert:
+    that:
+      - ansible_facts["os_family"] == "Debian"
+      - ansible_facts["distribution"] == "Debian"
+    fail_msg: This role currently supports Debian only.
+
+- name: Validate Debian release
+  ansible.builtin.assert:
+    that:
+      - ansible_facts["distribution_major_version"] | int >= 13
+    fail_msg: This role requires Debian 13 (Trixie) or newer.
+
+- name: Validate required Keycloak credentials
+  ansible.builtin.assert:
+    that:
+      - keycloak_db_password != "change-me"
+      - keycloak_admin_password != "change-me"
+      - keycloak_db_host != "db.example.internal"
+    fail_msg: Set keycloak_db_host, keycloak_db_password and keycloak_admin_password.
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - tar
+      - openjdk-21-jre-headless
+    state: present
+    update_cache: true
+
+- name: Ensure Keycloak group exists
+  ansible.builtin.group:
+    name: "{{ keycloak_group }}"
+    system: true
+
+- name: Ensure Keycloak user exists
+  ansible.builtin.user:
+    name: "{{ keycloak_user }}"
+    group: "{{ keycloak_group }}"
+    system: true
+    shell: /usr/sbin/nologin
+    create_home: false
+
+- name: Ensure Keycloak directories exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - path: "{{ keycloak_config_dir }}"
+      owner: root
+      group: "{{ keycloak_group }}"
+      mode: "0750"
+    - path: "{{ keycloak_install_dir | dirname }}"
+      owner: root
+      group: root
+      mode: "0755"
+
+- name: Check installed Keycloak version
+  ansible.builtin.command: "{{ keycloak_install_dir }}/bin/kc.sh --version"
+  register: keycloak_version_cmd
+  changed_when: false
+  failed_when: false
+
+- name: Parse installed Keycloak version
+  ansible.builtin.set_fact:
+    keycloak_installed_version: >-
+      {{
+        (
+          keycloak_version_cmd.stdout
+          | default('')
+          | regex_findall('([0-9]+\\.[0-9]+\\.[0-9]+)')
+          | first
+        ) | default('')
+      }}
+    keycloak_target_version: "{{ keycloak_version | regex_replace('^v', '') }}"
+
+- name: Decide if Keycloak update is required
+  ansible.builtin.set_fact:
+    keycloak_update_required: "{{ keycloak_installed_version != keycloak_target_version }}"
+
+- name: Show Keycloak version check
+  ansible.builtin.debug:
+    msg:
+      installed_version: "{{ keycloak_installed_version | default('not installed') }}"
+      target_version: "{{ keycloak_target_version }}"
+      update_required: "{{ keycloak_update_required }}"
+
+- name: Download Keycloak archive
+  ansible.builtin.get_url:
+    url: "https://github.com/keycloak/keycloak/releases/download/{{ keycloak_target_version }}/keycloak-{{ keycloak_target_version }}.tar.gz"
+    dest: "/tmp/keycloak-{{ keycloak_target_version }}.tar.gz"
+    mode: "0644"
+  when: keycloak_update_required
+
+- name: Extract Keycloak archive
+  ansible.builtin.unarchive:
+    src: "/tmp/keycloak-{{ keycloak_target_version }}.tar.gz"
+    dest: /tmp
+    remote_src: true
+  when: keycloak_update_required
+
+- name: Remove previous Keycloak installation
+  ansible.builtin.file:
+    path: "{{ keycloak_install_dir }}"
+    state: absent
+  when: keycloak_update_required
+
+- name: Install Keycloak version
+  ansible.builtin.command:
+    argv:
+      - mv
+      - "/tmp/keycloak-{{ keycloak_target_version }}"
+      - "{{ keycloak_install_dir }}"
+  when: keycloak_update_required
+
+- name: Ensure Keycloak installation ownership
+  ansible.builtin.file:
+    path: "{{ keycloak_install_dir }}"
+    state: directory
+    owner: "{{ keycloak_user }}"
+    group: "{{ keycloak_group }}"
+    recurse: true
+
+- name: Render Keycloak config
+  ansible.builtin.template:
+    src: keycloak.conf.j2
+    dest: "{{ keycloak_config_file }}"
+    owner: root
+    group: "{{ keycloak_group }}"
+    mode: "0640"
+  notify: Restart keycloak
+
+- name: Render Keycloak environment file
+  ansible.builtin.template:
+    src: keycloak.env.j2
+    dest: "{{ keycloak_env_file }}"
+    owner: root
+    group: "{{ keycloak_group }}"
+    mode: "0640"
+  notify: Restart keycloak
+
+- name: Render systemd unit
+  ansible.builtin.template:
+    src: keycloak.service.j2
+    dest: "/etc/systemd/system/{{ keycloak_service_name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart keycloak
+
+- name: Ensure Keycloak service is enabled and started
+  ansible.builtin.systemd:
+    name: "{{ keycloak_service_name }}"
+    enabled: true
+    state: started
+
+- name: Clean temporary Keycloak files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "/tmp/keycloak-{{ keycloak_target_version }}.tar.gz"
+    - "/tmp/keycloak-{{ keycloak_target_version }}"
+  when: keycloak_update_required

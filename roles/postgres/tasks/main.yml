@@ -1,0 +1,149 @@
+---
+- name: Validate target OS
+  ansible.builtin.assert:
+    that:
+      - ansible_facts["os_family"] == "Debian"
+      - ansible_facts["distribution"] == "Debian"
+    fail_msg: This role currently supports Debian only.
+
+- name: Validate Debian release
+  ansible.builtin.assert:
+    that:
+      - ansible_facts["distribution_major_version"] | int >= 13
+    fail_msg: This role requires Debian 13 (Trixie) or newer.
+
+- name: Validate postgres users structure
+  ansible.builtin.assert:
+    that:
+      - item.name is defined
+      - item.password is defined
+      - item.password != "change-me"
+    fail_msg: Each postgres_users item needs name and non-default password.
+  loop: "{{ postgres_users }}"
+
+- name: Validate postgres databases structure
+  ansible.builtin.assert:
+    that:
+      - item.name is defined
+      - item.owner is defined
+    fail_msg: Each postgres_databases item needs name and owner.
+  loop: "{{ postgres_databases }}"
+
+- name: Validate postgres hba rules structure
+  ansible.builtin.assert:
+    that:
+      - item.database is defined
+      - item.user is defined
+      - item.address is defined
+      - item.method is defined
+      - item.address != "0.0.0.0/0"
+    fail_msg: Each postgres_hba_rules item needs database,user,address,method and must not allow 0.0.0.0/0.
+  loop: "{{ postgres_hba_rules }}"
+
+- name: Install PostgreSQL packages
+  ansible.builtin.apt:
+    name:
+      - postgresql
+      - postgresql-client
+    state: present
+    update_cache: true
+
+- name: Ensure PostgreSQL service is enabled and running
+  ansible.builtin.systemd:
+    name: "{{ postgres_service_name }}"
+    enabled: true
+    state: started
+
+- name: Detect active PostgreSQL major version
+  ansible.builtin.command: bash -lc "ls -1 /etc/postgresql | sort -Vr | head -n1"
+  register: postgres_major_version_cmd
+  changed_when: false
+
+- name: Set PostgreSQL config paths
+  ansible.builtin.set_fact:
+    postgres_major_version: "{{ postgres_major_version_cmd.stdout | trim }}"
+    postgres_conf_file: "/etc/postgresql/{{ postgres_major_version_cmd.stdout | trim }}/main/postgresql.conf"
+    postgres_hba_file: "/etc/postgresql/{{ postgres_major_version_cmd.stdout | trim }}/main/pg_hba.conf"
+
+- name: Configure PostgreSQL listen addresses
+  ansible.builtin.lineinfile:
+    path: "{{ postgres_conf_file }}"
+    regexp: '^#?listen_addresses\s*='
+    line: "listen_addresses = '{{ postgres_listen_addresses }}'"
+  notify: Restart postgres
+
+- name: Configure PostgreSQL port
+  ansible.builtin.lineinfile:
+    path: "{{ postgres_conf_file }}"
+    regexp: '^#?port\s*='
+    line: "port = {{ postgres_port }}"
+  notify: Restart postgres
+
+- name: Apply managed pg_hba rules
+  ansible.builtin.blockinfile:
+    path: "{{ postgres_hba_file }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      {% for rule in postgres_hba_rules %}
+      {{ rule.type | default('host') }}    {{ rule.database }}    {{ rule.user }}    {{ rule.address }}    {{ rule.method }}
+      {% endfor %}
+  notify: Restart postgres
+
+- name: Check if PostgreSQL role exists
+  ansible.builtin.command:
+    argv:
+      - psql
+      - -tAc
+      - "SELECT 1 FROM pg_roles WHERE rolname='{{ item.name }}';"
+  become: true
+  become_user: postgres
+  register: postgres_role_checks
+  changed_when: false
+  loop: "{{ postgres_users }}"
+
+- name: Create PostgreSQL roles
+  ansible.builtin.command:
+    argv:
+      - psql
+      - -c
+      - "CREATE ROLE {{ item.item.name }} LOGIN PASSWORD '{{ item.item.password | replace(\"'\", \"''\") }}';"
+  become: true
+  become_user: postgres
+  when: (item.stdout | trim) != "1"
+  no_log: true
+  loop: "{{ postgres_role_checks.results }}"
+
+- name: Ensure PostgreSQL role passwords are current
+  ansible.builtin.command:
+    argv:
+      - psql
+      - -c
+      - "ALTER ROLE {{ item.name }} WITH PASSWORD '{{ item.password | replace(\"'\", \"''\") }}';"
+  become: true
+  become_user: postgres
+  changed_when: false
+  no_log: true
+  loop: "{{ postgres_users }}"
+
+- name: Check if PostgreSQL database exists
+  ansible.builtin.command:
+    argv:
+      - psql
+      - -tAc
+      - "SELECT 1 FROM pg_database WHERE datname='{{ item.name }}';"
+  become: true
+  become_user: postgres
+  register: postgres_db_checks
+  changed_when: false
+  loop: "{{ postgres_databases }}"
+
+- name: Create PostgreSQL databases
+  ansible.builtin.command:
+    argv:
+      - psql
+      - -c
+      - "CREATE DATABASE {{ item.item.name }} OWNER {{ item.item.owner }};"
+  become: true
+  become_user: postgres
+  when: (item.stdout | trim) != "1"
+  loop: "{{ postgres_db_checks.results }}"

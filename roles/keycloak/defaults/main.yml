@@ -1,0 +1,27 @@
+---
+keycloak_version: "26.0.7"
+
+keycloak_user: keycloak
+keycloak_group: keycloak
+keycloak_install_dir: /opt/keycloak
+keycloak_config_dir: /etc/keycloak
+keycloak_env_file: /etc/keycloak/keycloak.env
+keycloak_config_file: /etc/keycloak/keycloak.conf
+keycloak_service_name: keycloak
+
+keycloak_hostname: "{{ inventory_hostname }}"
+keycloak_http_port: 8080
+keycloak_http_enabled: true
+keycloak_proxy_headers: xforwarded
+keycloak_hostname_strict: false
+
+keycloak_db_name: keycloak
+keycloak_db_user: keycloak
+keycloak_db_password: "change-me"
+keycloak_db_host: db.example.internal
+keycloak_db_port: 5432
+
+keycloak_admin_user: admin
+keycloak_admin_password: "change-me"
+
+keycloak_java_opts: "-Xms256m -Xmx1024m"

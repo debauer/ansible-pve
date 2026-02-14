@@ -1,0 +1,16 @@
+db=postgres
+db-url-host={{ keycloak_db_host }}
+db-url-port={{ keycloak_db_port }}
+db-url-database={{ keycloak_db_name }}
+db-username={{ keycloak_db_user }}
+db-password={{ keycloak_db_password }}
+
+hostname={{ keycloak_hostname }}
+hostname-strict={{ keycloak_hostname_strict | string | lower }}
+
+http-enabled={{ keycloak_http_enabled | string | lower }}
+http-port={{ keycloak_http_port }}
+proxy-headers={{ keycloak_proxy_headers }}
+
+health-enabled=true
+metrics-enabled=true
