@@ -1,0 +1,11 @@
+# Managed by Ansible: roles/basic/basic_ssh_config
+{% for host in (groups['all'] | difference(groups['meta'] | default([])) | sort) %}
+{% set h = hostvars[host] %}
+{% if h.ansible_ssh_common_args is defined and (h.ansible_ssh_common_args | length > 0) %}
+Host {{ host }}
+  HostName {{ h.ansible_host | default(host) }}
+  Port {{ h.ansible_port | default(22) }}
+  ProxyCommand {{ h.ansible_ssh_common_args | regex_replace('^-o\\s+ProxyCommand=\"(.*)\"$', '\\1') }}
+
+{% endif %}
+{% endfor %}

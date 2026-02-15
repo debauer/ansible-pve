@@ -1,0 +1,3 @@
+---
+rackmonkey_ssh_config_dir: "{{ lookup('env', 'HOME') }}/.ssh/config.d"
+rackmonkey_ssh_config_file: "{{ rackmonkey_ssh_config_dir }}/rackmonkey"

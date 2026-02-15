@@ -1,0 +1,13 @@
+---
+- name: Set correct ssh settings
+  import_playbook: include/ssh.yml
+
+- name: Build local SSH config for proxied hosts
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Include role for local SSH config generation
+      ansible.builtin.include_role:
+        name: roles/basic/basic_ssh_config

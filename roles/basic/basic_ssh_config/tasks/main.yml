@@ -1,0 +1,12 @@
+---
+- name: Ensure SSH config.d directory exists locally
+  ansible.builtin.file:
+    path: "{{ rackmonkey_ssh_config_dir }}"
+    state: directory
+    mode: "0700"
+
+- name: Render SSH config for hosts that require a proxy
+  ansible.builtin.template:
+    src: rackmonkey.ssh_config.j2
+    dest: "{{ rackmonkey_ssh_config_file }}"
+    mode: "0600"
