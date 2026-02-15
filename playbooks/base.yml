@@ -66,3 +66,16 @@
             name: roles/apt
           when:
             - ansible_facts['os_family'] == "Debian"
+
+
+    - name: Applications
+      tags: apps
+      block:
+        - name: Include role keycloak
+          ansible.builtin.include_role:
+            name: roles/keycloak
+          when: keycloak is defined
+        - name: Include role postgres
+          ansible.builtin.include_role:
+            name: roles/postgres
+          when: postgres is defined

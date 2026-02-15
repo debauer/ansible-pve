@@ -3,8 +3,12 @@
   hosts: all,!meta
   gather_facts: false
   connection: local
+  tags:
+    - always
 
   tasks:
     - name: Include role to set correct ssh proxy
       ansible.builtin.include_role:
         name: roles/basic/basic_ssh
+      tags:
+        - always
