@@ -1,32 +1,32 @@
 # gitlab
 
-Installiert und konfiguriert GitLab Omnibus auf Debian 13 (Trixie) oder neuer.
+Installs and configures GitLab Omnibus on Debian 13 (Trixie) or newer.
 
-## Rolle nutzt
+## What This Role Uses
 
-- GitLab APT-Repository inkl. GPG-Key
-- Installation von `gitlab-ce` oder `gitlab-ee`
-- Verwaltung von `/etc/gitlab/gitlab.rb`
-- `gitlab-ctl reconfigure` bei Konfigurationsaenderung
+- GitLab APT repository including GPG key
+- installation of `gitlab-ce` or `gitlab-ee`
+- management of `/etc/gitlab/gitlab.rb`
+- `gitlab-ctl reconfigure` when configuration changes
 
-## Wichtige Variablen
+## Important Variables
 
-- `gitlab_domain`: DNS-Name fuer GitLab
-- `gitlab_external_url`: Vollstaendige URL (Standard: `https://{{ gitlab_domain }}`)
-- `gitlab_edition`: `ce` oder `ee`
-- `gitlab_registry_enable`: Container Registry aktivieren
-- `gitlab_smtp_enable`: SMTP-Konfiguration aktivieren
+- `gitlab_domain`: DNS name for GitLab
+- `gitlab_external_url`: full URL (default: `https://{{ gitlab_domain }}`)
+- `gitlab_edition`: `ce` or `ee`
+- `gitlab_registry_enable`: enable container registry
+- `gitlab_smtp_enable`: enable SMTP configuration
 
-Siehe alle Defaults in `defaults/main.yml`.
+See all defaults in `roles/apps/gitlab/defaults/main.yml`.
 
-## Beispiel
+## Example
 
 ```yaml
 - name: GitLab
   hosts: git.rackmonkey.de
   become: true
   roles:
-    - role: roles/gitlab
+    - role: roles/apps/gitlab
       vars:
         gitlab_domain: git.rackmonkey.de
         gitlab_registry_enable: true

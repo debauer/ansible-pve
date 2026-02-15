@@ -1,26 +1,30 @@
 # prometheus
 
-Installiert Prometheus als Binary von GitHub Releases.
+Installs Prometheus as a binary from GitHub Releases.
 
-Die Rolle vergleicht bei jedem Lauf:
-- installierte Version auf dem Zielhost (`prometheus --version`)
-- Zielversion (`latest` via GitHub API oder explizite Version)
+## Behavior
 
-Nur wenn sich die Version unterscheidet, wird das Release-Archiv heruntergeladen und installiert.
+On every run the role compares:
+- installed version on the target host (`prometheus --version`)
+- target version (`latest` via GitHub API or an explicit version)
 
-## Wichtige Variablen
+It downloads and installs a release archive only when versions differ.
 
-- `prometheus_version`: `latest` (Default) oder z. B. `2.55.1`
-- `prometheus_web_listen_address`: Default `0.0.0.0:9090`
-- `prometheus_storage_retention_time`: Default `15d`
-- `prometheus_extra_args`: zusätzliche CLI-Args als Liste
+## Important Variables
 
-## Beispiel
+- `prometheus_version`: `latest` (default) or explicit version (for example `2.55.1`)
+- `prometheus_web_listen_address`: default `0.0.0.0:9090`
+- `prometheus_storage_retention_time`: default `15d`
+- `prometheus_extra_args`: additional CLI args list
+
+Defaults: `roles/monitoring/prometheus/defaults/main.yml`
+
+## Example
 
 ```yaml
 - name: Install Prometheus
   hosts: monitoring
   become: true
   roles:
-    - role: roles/prometheus
+    - role: roles/monitoring/prometheus
 ```

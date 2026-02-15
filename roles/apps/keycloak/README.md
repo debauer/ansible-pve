@@ -1,23 +1,23 @@
 # keycloak
 
-Installiert Keycloak auf Debian 13 (Trixie) oder neuer.
+Installs Keycloak on Debian 13 (Trixie) or newer.
 
-Die Rolle erwartet eine externe PostgreSQL-Instanz (separate VM). Auf dem Keycloak-Host wird keine lokale PostgreSQL-Installation vorgenommen.
+This role expects an external PostgreSQL instance (separate VM). No local PostgreSQL installation is performed on the Keycloak host.
 
-## Verhalten
+## Behavior
 
-- Prueft installierte Keycloak-Version mit `kc.sh --version`
-- Installiert nur, wenn Keycloak noch nicht installiert ist
-- Upgrades erfolgen nur bei `keycloak_upgrade: true`
-- Nutzt nur DB-Credentials und DB-Host fuer die Verbindung
+- Checks the installed Keycloak version with `kc.sh --version`
+- Installs only when Keycloak is not installed yet
+- Performs upgrades only when `keycloak_upgrade: true`
+- Uses only DB credentials and DB host for the connection
 
-## Wichtige Variablen
+## Important Variables
 
-- `keycloak_version`: `latest` (Default) oder feste Version (z. B. `26.0.7`)
-- `keycloak_upgrade`: `false` (Default), auf `true` setzen um ein Upgrade auf `keycloak_version` zu erzwingen
-- `keycloak_hostname`: externer Hostname
-- `keycloak_db_host`: Hostname/IP der separaten PostgreSQL-VM
+- `keycloak_version`: `latest` (default) or a fixed version (for example `26.0.7`)
+- `keycloak_upgrade`: `false` (default); set to `true` to force an upgrade to `keycloak_version`
+- `keycloak_hostname`: external hostname
+- `keycloak_db_host`: hostname/IP of the separate PostgreSQL VM
 - `keycloak_db_user`, `keycloak_db_password`, `keycloak_db_name`
-- `keycloak_admin_password`: Bootstrap Admin Passwort
+- `keycloak_admin_password`: bootstrap admin password
 
-Alle Defaults: `roles/apps/keycloak/defaults/main.yml`
+All defaults: `roles/apps/keycloak/defaults/main.yml`

@@ -1,27 +1,27 @@
 # postgres
 
-Installiert PostgreSQL auf Debian 13 (Trixie) oder neuer und verwaltet generisch:
-- Rollen/Benutzer
-- Datenbanken
-- pg_hba Regeln
+Installs PostgreSQL on Debian 13 (Trixie) or newer and manages:
+- roles/users
+- databases
+- pg_hba rules
 
-## Variablen
+## Variables
 
-- `postgres_users`: Liste von Usern mit Passwort
-- `postgres_databases`: Liste von Datenbanken mit Owner
-- `postgres_hba_rules`: Liste von Access-Regeln
+- `postgres_users`: list of users with passwords
+- `postgres_databases`: list of databases with owners
+- `postgres_hba_rules`: list of access rules
 - `postgres_listen_addresses`, `postgres_port`
 
-Defaults: `roles/postgres/defaults/main.yml`
+Defaults: `roles/apps/postgres/defaults/main.yml`
 
-## Beispiel
+## Example
 
 ```yaml
 - name: Postgres VM
   hosts: pg.rackmonkey.de
   become: true
   roles:
-    - role: roles/postgres
+    - role: roles/apps/postgres
       vars:
         postgres_users:
           - name: keycloak
