@@ -1,8 +1,8 @@
 ---
-keycloak: # marker to install keycloak
-keycloak_hostname: sso.rackmonkey.de
+keycloak: true # marker to install keycloak
+keycloak_hostname: https://sso.rackmonkey.de
 
-keycloak_db_host: pg.rackmonkey.de
+keycloak_db_host: pg.int.rackmonkey.de
 keycloak_db_port: 5432
 keycloak_db_name: keycloak
 keycloak_db_user: keycloak

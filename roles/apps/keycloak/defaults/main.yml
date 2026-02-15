@@ -1,12 +1,13 @@
 ---
-keycloak_version: "26.0.7"
+keycloak_version: latest
+keycloak_upgrade: false
 
 keycloak_user: keycloak
 keycloak_group: keycloak
 keycloak_install_dir: /opt/keycloak
 keycloak_config_dir: /etc/keycloak
 keycloak_env_file: /etc/keycloak/keycloak.env
-keycloak_config_file: /etc/keycloak/keycloak.conf
+keycloak_config_file: "{{ keycloak_install_dir }}/conf/keycloak.conf"
 keycloak_service_name: keycloak
 
 keycloak_hostname: "{{ inventory_hostname }}"

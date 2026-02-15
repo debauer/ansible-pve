@@ -58,6 +58,7 @@
   ansible.builtin.command: bash -lc "ls -1 /etc/postgresql | sort -Vr | head -n1"
   register: postgres_major_version_cmd
   changed_when: false
+  check_mode: false
 
 - name: Set PostgreSQL config paths
   ansible.builtin.set_fact:

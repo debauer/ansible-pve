@@ -1,5 +1,5 @@
 ---
-postgres: # marker to install posgres
+postgres: true # marker to install posgres
 postgres_listen_addresses: "*"
 postgres_port: 5432
 

@@ -9,7 +9,7 @@ User={{ keycloak_user }}
 Group={{ keycloak_group }}
 WorkingDirectory={{ keycloak_install_dir }}
 EnvironmentFile=-{{ keycloak_env_file }}
-ExecStart={{ keycloak_install_dir }}/bin/kc.sh start --config-file={{ keycloak_config_file }}
+ExecStart={{ keycloak_install_dir }}/bin/kc.sh start
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=65535

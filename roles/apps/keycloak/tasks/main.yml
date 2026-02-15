@@ -66,8 +66,28 @@
   changed_when: false
   failed_when: false
 
+- name: Query latest Keycloak release metadata from GitHub
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/keycloak/keycloak/releases/latest
+    method: GET
+    return_content: true
+    headers:
+      Accept: application/vnd.github+json
+  register: keycloak_latest_release
+  changed_when: false
+  when: keycloak_version == "latest"
+
+- name: Ensure latest Keycloak release metadata is available
+  ansible.builtin.assert:
+    that:
+      - keycloak_latest_release.json.tag_name is defined
+      - keycloak_latest_release.json.tag_name | length > 0
+    fail_msg: Could not resolve latest Keycloak release from GitHub API.
+  when: keycloak_version == "latest"
+
 - name: Parse installed Keycloak version
   ansible.builtin.set_fact:
+    keycloak_installed: "{{ keycloak_version_cmd.rc == 0 }}"
     keycloak_installed_version: >-
       {{
         (
@@ -77,22 +97,48 @@
           | first
         ) | default('')
       }}
-    keycloak_target_version: "{{ keycloak_version | regex_replace('^v', '') }}"
+    keycloak_target_tag: >-
+      {{
+        (
+          keycloak_latest_release.json.tag_name
+          if keycloak_version == "latest"
+          else keycloak_version
+        )
+      }}
+    keycloak_target_version: >-
+      {{
+        (
+          keycloak_latest_release.json.tag_name
+          if keycloak_version == "latest"
+          else keycloak_version
+        ) | regex_replace('^v', '')
+      }}
 
-- name: Decide if Keycloak update is required
+- name: Decide if Keycloak install or upgrade is required
   ansible.builtin.set_fact:
-    keycloak_update_required: "{{ keycloak_installed_version != keycloak_target_version }}"
+    keycloak_install_required: "{{ not keycloak_installed }}"
+    keycloak_upgrade_required: >-
+      {{
+        (keycloak_upgrade | bool)
+        and keycloak_installed
+        and (keycloak_installed_version != keycloak_target_version)
+      }}
+    keycloak_update_required: "{{ keycloak_install_required or keycloak_upgrade_required }}"
 
 - name: Show Keycloak version check
   ansible.builtin.debug:
     msg:
-      installed_version: "{{ keycloak_installed_version | default('not installed') }}"
+      installed: "{{ keycloak_installed }}"
+      installed_version: "{{ keycloak_installed_version | default('') }}"
       target_version: "{{ keycloak_target_version }}"
+      install_required: "{{ keycloak_install_required }}"
+      upgrade_enabled: "{{ keycloak_upgrade | bool }}"
+      upgrade_required: "{{ keycloak_upgrade_required }}"
       update_required: "{{ keycloak_update_required }}"
 
 - name: Download Keycloak archive
   ansible.builtin.get_url:
-    url: "https://github.com/keycloak/keycloak/releases/download/{{ keycloak_target_version }}/keycloak-{{ keycloak_target_version }}.tar.gz"
+    url: "https://github.com/keycloak/keycloak/releases/download/{{ keycloak_target_tag }}/keycloak-{{ keycloak_target_version }}.tar.gz"
     dest: "/tmp/keycloak-{{ keycloak_target_version }}.tar.gz"
     mode: "0644"
   when: keycloak_update_required
