@@ -73,9 +73,9 @@
       block:
         - name: Include role keycloak
           ansible.builtin.include_role:
-            name: roles/keycloak
+            name: roles/apps/keycloak
           when: keycloak is defined
         - name: Include role postgres
           ansible.builtin.include_role:
-            name: roles/postgres
+            name: roles/apps/postgres
           when: postgres is defined
