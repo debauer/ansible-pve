@@ -1,0 +1,97 @@
+---
+- name: Prepare synthetic inventory
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    pve_bridge_test:
+      br-uplink:
+        public: true
+        networks:
+          - 138.201.133.94/32
+      br-internal:
+        public: false
+        proxy: proxy.rackmonkey.de
+        networks:
+          - 10.63.13.0/24
+
+  tasks:
+    - name: Add internal-only Proxmox guest
+      ansible.builtin.add_host:
+        name: guest-internal
+        groups:
+          - targets
+        proxmox_net0:
+          ip: 10.63.13.3/24
+        pve_bridge: "{{ pve_bridge_test }}"
+        ssh_basic_proxy_host: proxy.rackmonkey.de
+        ssh_basic_proxy_port: 1022
+
+    - name: Add public Proxmox guest
+      ansible.builtin.add_host:
+        name: guest-public
+        groups:
+          - targets
+        proxmox_net0:
+          ip: 138.201.133.94/32
+        pve_bridge: "{{ pve_bridge_test }}"
+        ssh_basic_proxy_host: proxy.rackmonkey.de
+        ssh_basic_proxy_port: 1022
+
+    - name: Add non-Proxmox host
+      ansible.builtin.add_host:
+        name: plain-host
+        groups:
+          - targets
+        ansible_host: 192.0.2.10
+        pve_bridge: "{{ pve_bridge_test }}"
+        ssh_basic_proxy_host: proxy.rackmonkey.de
+        ssh_basic_proxy_port: 1022
+
+- name: Converge ssh_proxy_overwrite role
+  hosts: targets
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Include ssh_proxy_overwrite role
+      ansible.builtin.include_role:
+        name: ssh_proxy_overwrite
+
+- name: Persist resolved values for verify step
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    result_file: /tmp/ansible-tests/ssh_proxy_overwrite/results.json
+
+  tasks:
+    - name: Ensure result directory exists
+      ansible.builtin.file:
+        path: "{{ result_file | dirname }}"
+        state: directory
+        mode: "0755"
+
+    - name: Write resolved hostvars snapshot
+      ansible.builtin.copy:
+        dest: "{{ result_file }}"
+        mode: "0644"
+        content: |
+          {{
+            {
+              "guest_internal": {
+                "ansible_host": hostvars["guest-internal"].ansible_host | default(""),
+                "ansible_ssh_common_args": hostvars["guest-internal"].ansible_ssh_common_args | default("")
+              },
+              "guest_public": {
+                "ansible_host": hostvars["guest-public"].ansible_host | default(""),
+                "ansible_ssh_common_args": hostvars["guest-public"].ansible_ssh_common_args | default("")
+              },
+              "plain_host": {
+                "ansible_host": hostvars["plain-host"].ansible_host | default(""),
+                "ansible_ssh_common_args": hostvars["plain-host"].ansible_ssh_common_args | default("")
+              }
+            } | to_nice_json
+          }}

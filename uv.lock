@@ -1,9 +1,13 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.13"
 resolution-markers = [
-    "python_full_version >= '3.14'",
-    "python_full_version < '3.14'",
+    "python_full_version >= '3.14' and sys_platform == 'linux2'",
+    "python_full_version >= '3.14' and sys_platform == 'linux'",
+    "python_full_version >= '3.14' and sys_platform != 'linux' and sys_platform != 'linux2'",
+    "python_full_version < '3.14' and sys_platform == 'linux2'",
+    "python_full_version < '3.14' and sys_platform == 'linux'",
+    "python_full_version < '3.14' and sys_platform != 'linux' and sys_platform != 'linux2'",
 ]
 
 [[package]]
@@ -89,12 +93,26 @@ dependencies = [
     { name = "inwx-domrobot" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "ansible-compat" },
+    { name = "molecule" },
+    { name = "molecule-plugins", extra = ["docker"] },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "ansible", specifier = ">=9,<10" },
     { name = "ansible-lint", specifier = ">=25.9.0" },
     { name = "dnspython", specifier = ">=2.7.0,<3.0.0" },
     { name = "inwx-domrobot", specifier = ">=3.2.0,<4.0.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "ansible-compat", specifier = ">=25.11.0" },
+    { name = "molecule", specifier = ">=25.12.0" },
+    { name = "molecule-plugins", extras = ["docker"], specifier = ">=25.8.12" },
 ]
 
 [[package]]
@@ -248,6 +266,18 @@ wheels = [
 ]
 
 [[package]]
+name = "click-help-colors"
+version = "0.9.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6f/50/76f51d9c7fcd72a12da466801f7c1fa3884424c947787333c74327b4fcf3/click-help-colors-0.9.4.tar.gz", hash = "sha256:f4cabe52cf550299b8888f4f2ee4c5f359ac27e33bcfe4d61db47785a5cc936c", size = 8048, upload-time = "2023-11-18T11:55:15.554Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/99/f8/8768f803151714640cb6f06fd9de490ce7db632d351da05f42f77330d2fd/click_help_colors-0.9.4-py3-none-any.whl", hash = "sha256:b33c5803eeaeb084393b1ab5899dc5476c7196b87a18713045afe76f840b42db", size = 6437, upload-time = "2023-11-18T11:55:09.775Z" },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -331,6 +361,32 @@ wheels = [
 ]
 
 [[package]]
+name = "docker"
+version = "7.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
+    { name = "requests" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/91/9b/4a2ea29aeba62471211598dac5d96825bb49348fa07e906ea930394a83ce/docker-7.1.0.tar.gz", hash = "sha256:ad8c70e6e3f8926cb8a92619b832b4ea5299e2831c14284663184e200546fa6c", size = 117834, upload-time = "2024-05-23T11:13:57.216Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e3/26/57c6fb270950d476074c087527a558ccb6f4436657314bfb6cdf484114c4/docker-7.1.0-py3-none-any.whl", hash = "sha256:c96b93b7f0a746f9e77d325bcfb87422a3d8bd4f03136ae8a85b37f1898d5fc0", size = 147774, upload-time = "2024-05-23T11:13:55.01Z" },
+]
+
+[[package]]
+name = "enrich"
+version = "1.2.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "rich" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/bb/77/cb9b3d6f2e2e5f8104e907ea4c4d575267238f52c51cf9f864b865a99710/enrich-1.2.7.tar.gz", hash = "sha256:0a2ab0d2931dff8947012602d1234d2a3ee002d9a355b5d70be6bf5466008893", size = 16918, upload-time = "2022-01-10T15:30:33.873Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/76/67/aecd1d435dbbdcea21a197d708e9ff0bcc7306c2847c6c87cc1a91e2cca4/enrich-1.2.7-py3-none-any.whl", hash = "sha256:f29b2c8c124b4dbd7c975ab5c3568f6c7a47938ea3b7d2106c8a3bd346545e4f", size = 8717, upload-time = "2022-01-10T15:30:32.723Z" },
+]
+
+[[package]]
 name = "filelock"
 version = "3.20.0"
 source = { registry = "https://pypi.org/simple" }
@@ -400,6 +456,18 @@ wheels = [
 ]
 
 [[package]]
+name = "markdown-it-py"
+version = "4.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mdurl" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5b/f5/4ec618ed16cc4f8fb3b701563655a69816155e79e24a17b651541804721d/markdown_it_py-4.0.0.tar.gz", hash = "sha256:cb0a2b4aa34f932c007117b194e945bd74e0ec24133ceb5bac59009cda1cb9f3", size = 73070, upload-time = "2025-08-11T12:57:52.854Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/94/54/e7d793b573f298e1c9013b8c4dade17d481164aa517d1d7148619c2cedbf/markdown_it_py-4.0.0-py3-none-any.whl", hash = "sha256:87327c59b172c5011896038353a81343b6754500a08cd7a4973bb48c6d578147", size = 87321, upload-time = "2025-08-11T12:57:51.923Z" },
+]
+
+[[package]]
 name = "markupsafe"
 version = "3.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -452,6 +520,57 @@ wheels = [
 ]
 
 [[package]]
+name = "mdurl"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
+]
+
+[[package]]
+name = "molecule"
+version = "25.12.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "ansible-compat" },
+    { name = "ansible-core" },
+    { name = "click" },
+    { name = "click-help-colors" },
+    { name = "enrich" },
+    { name = "jinja2" },
+    { name = "jsonschema" },
+    { name = "packaging" },
+    { name = "pluggy" },
+    { name = "pyyaml" },
+    { name = "rich" },
+    { name = "wcmatch" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b8/b1/205ca8017593656836463cee1e4690b86d219ca19caebc704b8b00f7c6e8/molecule-25.12.0.tar.gz", hash = "sha256:b226bf1be67ce0fa30c726aab226063f9443e561d7e3d048f55dfb2ee51adbd6", size = 4666157, upload-time = "2025-12-02T15:45:07.523Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5e/04/ea54db2bcec0b76c8c4747c663b8b8591b63bbd424a656d70b11cb8f33e9/molecule-25.12.0-py3-none-any.whl", hash = "sha256:3df4fc034f3204efce7247b5b1087b2a7e411e27374a05fe96c6c676656e82bd", size = 152787, upload-time = "2025-12-02T15:45:05.698Z" },
+]
+
+[[package]]
+name = "molecule-plugins"
+version = "25.8.12"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "molecule" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/65/11/b7316c96c9ecca901f3a7fd5927f3dd757e17e11a428fb83cc5349e9b063/molecule_plugins-25.8.12.tar.gz", hash = "sha256:75f32763e90275bfc24bcc0d27b9bb22ac973658bf902b2e3e8af8e2a1c32083", size = 106414, upload-time = "2025-08-12T19:57:36.628Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a2/ee/efdf33ffb32861d9b357a4e7cff018206729703440c028b92ed64fe834b1/molecule_plugins-25.8.12-py3-none-any.whl", hash = "sha256:c5b8ceb209a5ff87326631d60408f8d08b9431b2e339dad4c620130b50279ce0", size = 76357, upload-time = "2025-08-12T19:57:35.285Z" },
+]
+
+[package.optional-dependencies]
+docker = [
+    { name = "docker" },
+    { name = "requests" },
+    { name = "selinux", marker = "sys_platform == 'linux' or sys_platform == 'linux2'" },
+]
+
+[[package]]
 name = "mypy-extensions"
 version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -488,6 +607,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pluggy"
+version = "1.6.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
 name = "pycparser"
 version = "2.23"
 source = { registry = "https://pypi.org/simple" }
@@ -497,12 +625,34 @@ wheels = [
 ]
 
 [[package]]
+name = "pygments"
+version = "2.19.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b0/77/a5b8c569bf593b0140bde72ea885a803b82086995367bf2037de0159d924/pygments-2.19.2.tar.gz", hash = "sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887", size = 4968631, upload-time = "2025-06-21T13:39:12.283Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c7/21/705964c7812476f378728bdf590ca4b771ec72385c533964653c68e86bdc/pygments-2.19.2-py3-none-any.whl", hash = "sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b", size = 1225217, upload-time = "2025-06-21T13:39:07.939Z" },
+]
+
+[[package]]
 name = "pytokens"
 version = "0.3.0"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/4e/8d/a762be14dae1c3bf280202ba3172020b2b0b4c537f94427435f19c413b72/pytokens-0.3.0.tar.gz", hash = "sha256:2f932b14ed08de5fcf0b391ace2642f858f1394c0857202959000b68ed7a458a", size = 17644, upload-time = "2025-11-05T13:36:35.34Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/84/25/d9db8be44e205a124f6c98bc0324b2bb149b7431c53877fc6d1038dddaf5/pytokens-0.3.0-py3-none-any.whl", hash = "sha256:95b2b5eaf832e469d141a378872480ede3f251a5a5041b8ec6e581d3ac71bbf3", size = 12195, upload-time = "2025-11-05T13:36:33.183Z" },
+]
+
+[[package]]
+name = "pywin32"
+version = "311"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a5/be/3fd5de0979fcb3994bfee0d65ed8ca9506a8a1260651b86174f6a86f52b3/pywin32-311-cp313-cp313-win32.whl", hash = "sha256:f95ba5a847cba10dd8c4d8fefa9f2a6cf283b8b88ed6178fa8a6c1ab16054d0d", size = 8705700, upload-time = "2025-07-14T20:13:26.471Z" },
+    { url = "https://files.pythonhosted.org/packages/e3/28/e0a1909523c6890208295a29e05c2adb2126364e289826c0a8bc7297bd5c/pywin32-311-cp313-cp313-win_amd64.whl", hash = "sha256:718a38f7e5b058e76aee1c56ddd06908116d35147e133427e59a3983f703a20d", size = 9494700, upload-time = "2025-07-14T20:13:28.243Z" },
+    { url = "https://files.pythonhosted.org/packages/04/bf/90339ac0f55726dce7d794e6d79a18a91265bdf3aa70b6b9ca52f35e022a/pywin32-311-cp313-cp313-win_arm64.whl", hash = "sha256:7b4075d959648406202d92a2310cb990fea19b535c7f4a78d3f5e10b926eeb8a", size = 8709318, upload-time = "2025-07-14T20:13:30.348Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/31/097f2e132c4f16d99a22bfb777e0fd88bd8e1c634304e102f313af69ace5/pywin32-311-cp314-cp314-win32.whl", hash = "sha256:b7a2c10b93f8986666d0c803ee19b5990885872a7de910fc460f9b0c2fbf92ee", size = 8840714, upload-time = "2025-07-14T20:13:32.449Z" },
+    { url = "https://files.pythonhosted.org/packages/90/4b/07c77d8ba0e01349358082713400435347df8426208171ce297da32c313d/pywin32-311-cp314-cp314-win_amd64.whl", hash = "sha256:3aca44c046bd2ed8c90de9cb8427f581c479e594e99b5c0bb19b29c10fd6cb87", size = 9656800, upload-time = "2025-07-14T20:13:34.312Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/d2/21af5c535501a7233e734b8af901574572da66fcc254cb35d0609c9080dd/pywin32-311-cp314-cp314-win_arm64.whl", hash = "sha256:a508e2d9025764a8270f93111a970e1d0fbfc33f4153b388bb649b7eec4f9b42", size = 8932540, upload-time = "2025-07-14T20:13:36.379Z" },
 ]
 
 [[package]]
@@ -576,6 +726,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ce/10/f699366ce577423cbc3df3280063099054c23df70856465080798c6ebad6/resolvelib-1.0.1.tar.gz", hash = "sha256:04ce76cbd63fded2078ce224785da6ecd42b9564b1390793f64ddecbe997b309", size = 21065, upload-time = "2023-03-09T05:10:38.292Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d2/fc/e9ccf0521607bcd244aa0b3fbd574f71b65e9ce6a112c83af988bbbe2e23/resolvelib-1.0.1-py2.py3-none-any.whl", hash = "sha256:d2da45d1a8dfee81bdd591647783e340ef3bcb104b54c383f70d422ef5cc7dbf", size = 17194, upload-time = "2023-03-09T05:10:36.214Z" },
+]
+
+[[package]]
+name = "rich"
+version = "14.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "markdown-it-py" },
+    { name = "pygments" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/74/99/a4cab2acbb884f80e558b0771e97e21e939c5dfb460f488d19df485e8298/rich-14.3.2.tar.gz", hash = "sha256:e712f11c1a562a11843306f5ed999475f09ac31ffb64281f73ab29ffdda8b3b8", size = 230143, upload-time = "2026-02-01T16:20:47.908Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/45/615f5babd880b4bd7d405cc0dc348234c5ffb6ed1ea33e152ede08b2072d/rich-14.3.2-py3-none-any.whl", hash = "sha256:08e67c3e90884651da3239ea668222d19bea7b589149d8014a21c633420dbb69", size = 309963, upload-time = "2026-02-01T16:20:46.078Z" },
 ]
 
 [[package]]
@@ -682,6 +845,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b9/17/4e01a602693b572149f92c983c1f25bd608df02c3f5cf50fd1f94e124a59/ruamel_yaml_clib-0.2.15-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:542d77b72786a35563f97069b9379ce762944e67055bea293480f7734b2c7e5e", size = 765882, upload-time = "2025-11-16T16:13:49.526Z" },
     { url = "https://files.pythonhosted.org/packages/9f/17/7999399081d39ebb79e807314de6b611e1d1374458924eb2a489c01fc5ad/ruamel_yaml_clib-0.2.15-cp314-cp314-win32.whl", hash = "sha256:424ead8cef3939d690c4b5c85ef5b52155a231ff8b252961b6516ed7cf05f6aa", size = 102567, upload-time = "2025-11-16T16:13:50.78Z" },
     { url = "https://files.pythonhosted.org/packages/d2/67/be582a7370fdc9e6846c5be4888a530dcadd055eef5b932e0e85c33c7d73/ruamel_yaml_clib-0.2.15-cp314-cp314-win_amd64.whl", hash = "sha256:ac9b8d5fa4bb7fd2917ab5027f60d4234345fd366fe39aa711d5dca090aa1467", size = 122847, upload-time = "2025-11-16T16:13:51.807Z" },
+]
+
+[[package]]
+name = "selinux"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "distro", marker = "sys_platform == 'linux' or sys_platform == 'linux2'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/25/07/51acd62e1e15e1172d46f7e32faf138725b147f8c08dbf2d512159d7a310/selinux-0.3.0.tar.gz", hash = "sha256:2a88b337ac46ad0f06f557b2806c3df62421972f766673dd8bf26732fb75a9ea", size = 13479, upload-time = "2022-12-24T16:42:13.163Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/68/a7/ef33f8e5818ed6333cf5cb6f85f4f604e13d37d1bae4671e10d6f627f6d6/selinux-0.3.0-py2.py3-none-any.whl", hash = "sha256:ecf7add45c939e9dda682c390a2cd0a845c94a4793a2cce9e8870d4ee9501f99", size = 4160, upload-time = "2022-12-24T16:42:11.745Z" },
 ]
 
 [[package]]

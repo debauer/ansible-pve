@@ -1,0 +1,37 @@
+---
+- name: Verify ssh_proxy_overwrite role output
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    result_file: /tmp/ansible-tests/ssh_proxy_overwrite/results.json
+
+  tasks:
+    - name: Read result snapshot
+      ansible.builtin.slurp:
+        src: "{{ result_file }}"
+      register: result_file_raw
+
+    - name: Decode result snapshot
+      ansible.builtin.set_fact:
+        result: "{{ result_file_raw.content | b64decode | from_json }}"
+
+    - name: Assert internal guest uses SSH proxy override
+      ansible.builtin.assert:
+        that:
+          - result.guest_internal.ansible_host == "proxy.rackmonkey.de"
+          - >-
+            'ProxyCommand="openssl s_client -quiet -connect proxy.rackmonkey.de:1022 -servername 10.63.13.3"'
+            in result.guest_internal.ansible_ssh_common_args
+
+    - name: Assert public guest keeps direct SSH
+      ansible.builtin.assert:
+        that:
+          - result.guest_public.ansible_ssh_common_args == ""
+
+    - name: Assert non-Proxmox host is unchanged
+      ansible.builtin.assert:
+        that:
+          - result.plain_host.ansible_host == "192.0.2.10"
+          - result.plain_host.ansible_ssh_common_args == ""
