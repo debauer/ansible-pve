@@ -6,5 +6,5 @@
   tasks:
     - name: Include dns_inwx role
       ansible.builtin.import_role:
-        name: roles/dns_inwx
+        name: roles/network/dns_inwx
       delegate_to: localhost

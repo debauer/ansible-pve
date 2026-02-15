@@ -14,24 +14,32 @@
       block:
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/basic/basic_motd
+            name: roles/basic/motd
 
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/update
+            name: roles/basic/update
           when:
             - update_system is defined
             - update_system is truthy
 
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/packages
+            name: roles/basic/packages
 
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/network_interfaces
-          when: network_interfaces_interfaces is defined
+            name: roles/basic/fail2ban
 
+        - name: Include role
+          ansible.builtin.include_role:
+            name: roles/basic/apt
+          when:
+            - ansible_facts['os_family'] == "Debian"
+
+    - name: User roles
+      tags: user
+      block:
         - name: Include role
           ansible.builtin.include_role:
             name: roles/user/user_add
@@ -57,25 +65,29 @@
             - user_zsh is defined
             - user_zsh is truthy
 
+    - name: Network roles
+      tags: network
+      block:
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/fail2ban
-
-        - name: Include role
-          ansible.builtin.include_role:
-            name: roles/apt
-          when:
-            - ansible_facts['os_family'] == "Debian"
+            name: roles/network/interfaces
+          when: network_interfaces_interfaces is defined
 
 
-    - name: Applications
+    - name: Application roles
       tags: apps
       block:
         - name: Include role keycloak
           ansible.builtin.include_role:
             name: roles/apps/keycloak
-          when: keycloak is defined
+          when: keycloak is defined and keycloak is truthy
+
         - name: Include role postgres
           ansible.builtin.include_role:
             name: roles/apps/postgres
-          when: postgres is defined
+          when: postgres is defined and postgres is truthy
+
+        - name: Include gitlab role
+          ansible.builtin.include_role:
+            name: roles/apps/gitlab
+          when: gitlab is defined and gitlab is truthy

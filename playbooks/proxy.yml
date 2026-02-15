@@ -9,4 +9,4 @@
       block:
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/haproxy
+            name: roles/network/haproxy

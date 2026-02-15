@@ -43,4 +43,4 @@ dns_inwx:
 haproxy_services:
   - name: sso.rackmonkey.de
     IP: 10.63.13.4
-    Port: 8000
+    Port: 8080

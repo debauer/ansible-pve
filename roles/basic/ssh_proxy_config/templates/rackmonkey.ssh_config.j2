@@ -5,6 +5,8 @@
 Host {{ host }}
   HostName {{ h.ansible_host | default(host) }}
   Port {{ h.ansible_port | default(22) }}
+  HostKeyAlias {{ host }}
+  CheckHostIP no
   ProxyCommand {{ h.ansible_ssh_common_args | regex_replace('^-o\\s+ProxyCommand=\"(.*)\"$', '\\1') }}
 
 {% endif %}

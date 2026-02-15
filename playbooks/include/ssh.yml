@@ -9,6 +9,6 @@
   tasks:
     - name: Include role to set correct ssh proxy
       ansible.builtin.include_role:
-        name: roles/basic/basic_ssh
+        name: roles/basic/ssh_proxy_overwrite
       tags:
         - always

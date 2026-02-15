@@ -1,5 +1,5 @@
 ---
-- name: Cloud
+- name: Pve Playbook
   hosts: pve.rackmonkey.de
   gather_facts: true
   become: true
@@ -7,7 +7,7 @@
   tasks:
     - name: Include role
       ansible.builtin.include_role:
-        name: roles/network_interfaces
+        name: roles/network/interfaces
 
     - name: Install nftables
       ansible.builtin.package:

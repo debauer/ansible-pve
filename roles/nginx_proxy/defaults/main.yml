@@ -1,8 +1,0 @@
----
-nginx_proxy_deployment: "no" # package or docker
-nginx_proxy_docker_deployment_path: /opt/docker/nginx
-nginx_proxy_docker_user: root
-nginx_proxy_docker_filemode: 770
-
-nginx_proxy_docker_role: "geerlingguy.docker"
-nginx_proxy_certbot_role: "geerlingguy.certbot"

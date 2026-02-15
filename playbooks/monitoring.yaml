@@ -12,7 +12,7 @@
       block:
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/monitoring_server
+            name: roles/monitoring/monitoring_server
 
 - name: Configure Monitoring Base for Clients for Rackmonkey
   hosts: all
@@ -23,4 +23,4 @@
       block:
         - name: Include role
           ansible.builtin.include_role:
-            name: roles/monitoring_client
+            name: roles/monitoring/monitoring_client

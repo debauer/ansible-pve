@@ -10,4 +10,4 @@
   tasks:
     - name: Include role for local SSH config generation
       ansible.builtin.include_role:
-        name: roles/basic/basic_ssh_config
+        name: roles/basic/ssh_proxy_config

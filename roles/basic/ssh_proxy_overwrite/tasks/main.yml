@@ -1,7 +1,7 @@
 ---
 - name: Collect Proxmox network facts from inventory host vars
   ansible.builtin.set_fact:
-    basic_ssh_port_proxmox_nets: >-
+    ssh_basic_port_proxmox_nets: >-
       {{
         vars
         | dict2items
@@ -12,11 +12,11 @@
 
 - name: Detect if host has Proxmox guest network facts
   ansible.builtin.set_fact:
-    basic_ssh_port_is_proxmox_guest: "{{ (basic_ssh_port_proxmox_nets | length) > 0 }}"
+    ssh_basic_port_is_proxmox_guest: "{{ (ssh_basic_port_proxmox_nets | length) > 0 }}"
 
 - name: Collect public networks from pve_bridge
   ansible.builtin.set_fact:
-    basic_ssh_port_public_networks: >-
+    ssh_basic_port_public_networks: >-
       {{
         pve_bridge | default({})
         | dict2items
@@ -30,17 +30,17 @@
 
 - name: Collect guest IP/CIDR values
   ansible.builtin.set_fact:
-    basic_ssh_port_guest_ips: >-
+    ssh_basic_port_guest_ips: >-
       {{
         (
-          basic_ssh_port_proxmox_nets
+          ssh_basic_port_proxmox_nets
           | selectattr('ip', 'defined')
           | map(attribute='ip')
           | list
         )
         +
         (
-          basic_ssh_port_proxmox_nets
+          ssh_basic_port_proxmox_nets
           | selectattr('ip6', 'defined')
           | map(attribute='ip6')
           | reject('equalto', 'auto')
@@ -52,13 +52,13 @@
   ansible.builtin.debug:
     msg:
       host: "{{ inventory_hostname }}"
-      is_proxmox_guest: "{{ basic_ssh_port_is_proxmox_guest }}"
-      proxmox_nets_count: "{{ basic_ssh_port_proxmox_nets | length }}"
-      guest_ips: "{{ basic_ssh_port_guest_ips }}"
-      public_networks: "{{ basic_ssh_port_public_networks }}"
+      is_proxmox_guest: "{{ ssh_basic_port_is_proxmox_guest }}"
+      proxmox_nets_count: "{{ ssh_basic_port_proxmox_nets | length }}"
+      guest_ips: "{{ ssh_basic_port_guest_ips }}"
+      public_networks: "{{ ssh_basic_port_public_networks }}"
   when:
-    - basic_ssh_port_debug | bool
-    - basic_ssh_port_is_proxmox_guest
+    - ssh_basic_port_debug | bool
+    - ssh_basic_port_is_proxmox_guest
 
 - name: Detect public network attachment (subnet-aware)
   ansible.builtin.command:
@@ -105,28 +105,28 @@
                 break
 
         print(json.dumps({"has_public_network": has_public}))
-      - "{{ basic_ssh_port_guest_ips | to_json }}"
-      - "{{ basic_ssh_port_public_networks | to_json }}"
-  register: basic_ssh_port_network_check
+      - "{{ ssh_basic_port_guest_ips | to_json }}"
+      - "{{ ssh_basic_port_public_networks | to_json }}"
+  register: ssh_basic_port_network_check
   changed_when: false
   check_mode: false
 
 - name: Set public network attachment fact
   ansible.builtin.set_fact:
-    basic_ssh_port_has_public_network: >-
+    ssh_basic_port_has_public_network: >-
       {{
-        (basic_ssh_port_network_check.stdout | from_json).has_public_network
+        (ssh_basic_port_network_check.stdout | from_json).has_public_network
       }}
   check_mode: false
 
 - name: Resolve connection target and port
   ansible.builtin.set_fact:
-    basic_ssh_port_is_internal_only: >-
+    ssh_basic_port_is_internal_only: >-
       {{
-        basic_ssh_port_is_proxmox_guest
-        and not basic_ssh_port_has_public_network
+        ssh_basic_port_is_proxmox_guest
+        and not ssh_basic_port_has_public_network
       }}
-    basic_ssh_port_proxy_host: >-
+    ssh_basic_port_proxy_host: >-
       {{
         (
           pve_bridge | default({})
@@ -136,16 +136,16 @@
           | list
           | first
         )
-        | default(basic_ssh_port_proxy_host_default)
+        | default(ssh_basic_port_proxy_host_default)
       }}
   check_mode: false
 
 - name: Extract primary IPv4 for port mapping
   ansible.builtin.set_fact:
-    basic_ssh_port_primary_ipv4: >-
+    ssh_basic_port_primary_ipv4: >-
       {{
         (
-          basic_ssh_port_proxmox_nets
+          ssh_basic_port_proxmox_nets
           | selectattr('ip', 'defined')
           | map(attribute='ip')
           | select('match', '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/[0-9]+$')
@@ -155,43 +155,43 @@
         )
         | default('')
       }}
-  when: basic_ssh_port_is_internal_only
+  when: ssh_basic_port_is_internal_only
   check_mode: false
 
 
 - name: Ensure internal-only guests have an IPv4 address for port mapping
   ansible.builtin.assert:
     that:
-      - basic_ssh_port_primary_ipv4 | length > 0
+      - ssh_basic_port_primary_ipv4 | length > 0
     fail_msg: >-
       Cannot resolve SSH port from IPv4 for {{ inventory_hostname }}.
       Internal-only guests need an IPv4 address in proxmox_net*.
   when:
-    - basic_ssh_port_is_internal_only
+    - ssh_basic_port_is_internal_only
   check_mode: false
 
 - name: Apply ansible_ssh_common_args # noqa: var-naming
   ansible.builtin.set_fact:
-    ansible_host: "{{ basic_ssh_proxy_host }}"
-    ansible_ssh_common_args: '-o ProxyCommand="openssl s_client -quiet -connect {{ basic_ssh_proxy_host }}:{{ basic_ssh_proxy_port }} -servername {{ basic_ssh_port_primary_ipv4 }}"'
+    ansible_host: "{{ ssh_basic_proxy_host }}"
+    ansible_ssh_common_args: '-o ProxyCommand="openssl s_client -quiet -connect {{ ssh_basic_proxy_host }}:{{ ssh_basic_proxy_port }} -servername {{ ssh_basic_port_primary_ipv4 }}"'
   when:
-    - basic_ssh_port_is_proxmox_guest
-    - basic_ssh_port_primary_ipv4 is defined
+    - ssh_basic_port_is_proxmox_guest
+    - ssh_basic_port_primary_ipv4 is defined
   check_mode: false
 
 - name: Debug resolved SSH target
   ansible.builtin.debug:
     msg:
       host: "{{ inventory_hostname }}"
-      has_public_network: "{{ basic_ssh_port_has_public_network | default(false) }}"
-      internal_only: "{{ basic_ssh_port_is_internal_only | default(false) }}"
-      is_proxmox_guest: "{{ basic_ssh_port_is_proxmox_guest }}"
+      has_public_network: "{{ ssh_basic_port_has_public_network | default(false) }}"
+      internal_only: "{{ ssh_basic_port_is_internal_only | default(false) }}"
+      is_proxmox_guest: "{{ ssh_basic_port_is_proxmox_guest }}"
       ansible_port: "{{ ansible_port | default('')}}"
       ansible_host: "{{ ansible_host | default('')}}"
       inventory_hostname: "{{ inventory_hostname | default('')}}"
-      primary_ipv4: "{{ basic_ssh_port_primary_ipv4 | default('') }}"
+      primary_ipv4: "{{ ssh_basic_port_primary_ipv4 | default('') }}"
       ansible_ssh_common_args: "{{ ansible_ssh_common_args | default('') }}"
       ansible_python_interpreter: "{{ ansible_python_interpreter | default('') }}"
   when:
-    - basic_ssh_port_debug | bool
-    - basic_ssh_port_is_proxmox_guest
+    - ssh_basic_port_debug | bool
+    - ssh_basic_port_is_proxmox_guest
