@@ -31,6 +31,7 @@ gitlab_registry_external_url: "{{ gitlab_external_scheme }}://{{ gitlab_registry
 gitlab_registry_path: "/var/opt/gitlab/gitlab-rails/shared/registry"
 gitlab_registry_nginx_ssl_certificate: "/etc/letsencrypt/live/{{ gitlab_registry_domain }}/fullchain.pem"
 gitlab_registry_nginx_ssl_certificate_key: "/etc/letsencrypt/live/{{ gitlab_registry_domain }}/privkey.pem"
+gitlab_registry_nginx_listen_port: 5000
 
 gitlab_smtp_enable: false
 gitlab_smtp_address: smtp.example.com
@@ -43,3 +44,27 @@ gitlab_smtp_enable_starttls_auto: true
 gitlab_smtp_openssl_verify_mode: peer
 gitlab_smtp_email_from: "gitlab@{{ gitlab_domain }}"
 gitlab_smtp_email_reply_to: "noreply@{{ gitlab_domain }}"
+
+gitlab_oauth_keycloak_enable: false
+gitlab_oauth_keycloak_label: Keycloak
+gitlab_oauth_keycloak_name: openid_connect
+gitlab_oauth_keycloak_issuer: ""
+gitlab_oauth_keycloak_client_id: ""
+gitlab_oauth_keycloak_client_secret: ""
+gitlab_oauth_keycloak_scope:
+  - openid
+  - profile
+  - email
+gitlab_oauth_keycloak_response_type: code
+gitlab_oauth_keycloak_discovery: true
+gitlab_oauth_keycloak_client_auth_method: query
+gitlab_oauth_keycloak_uid_field: preferred_username
+gitlab_oauth_keycloak_pkce: true
+gitlab_oauth_keycloak_allow_single_sign_on:
+  - openid_connect
+gitlab_oauth_keycloak_auto_link_user:
+  - openid_connect
+gitlab_oauth_keycloak_block_auto_created_users: false
+
+gitlab_unprivileged_lxc: true
+gitlab_ssl_enable: false

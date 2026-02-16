@@ -16,9 +16,9 @@
   ansible.builtin.assert:
     that:
       - keycloak_db_password != "change-me"
-      - keycloak_admin_password != "change-me"
+      - keycloak_initial_admin_password != "change-me"
       - keycloak_db_host != "db.example.internal"
-    fail_msg: Set keycloak_db_host, keycloak_db_password and keycloak_admin_password.
+    fail_msg: Set keycloak_db_host, keycloak_db_password and keycloak_initial_admin_password.
 
 - name: Install required packages
   ansible.builtin.apt:

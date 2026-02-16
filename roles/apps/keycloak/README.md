@@ -18,6 +18,6 @@ This role expects an external PostgreSQL instance (separate VM). No local Postgr
 - `keycloak_hostname`: external hostname
 - `keycloak_db_host`: hostname/IP of the separate PostgreSQL VM
 - `keycloak_db_user`, `keycloak_db_password`, `keycloak_db_name`
-- `keycloak_admin_password`: bootstrap admin password
+- `keycloak_initial_admin_password`: bootstrap admin password
 
 All defaults: `roles/apps/keycloak/defaults/main.yml`

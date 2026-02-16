@@ -87,10 +87,11 @@
             name: roles/apps/keycloak
           when: keycloak is defined and keycloak is truthy
 
-        - name: Include role keycloak_config
-          ansible.builtin.include_role:
-            name: roles/apps/keycloak_config
-          when: keycloak is defined and keycloak is truthy
+#       - name: Include role keycloak_config
+#         ansible.builtin.include_role:
+#           name: roles/apps/keycloak_config
+#         when: keycloak is defined and keycloak is truthy
+#         tags: keyclock-config
 
         - name: Include gitlab role
           ansible.builtin.include_role:

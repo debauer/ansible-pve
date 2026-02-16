@@ -55,6 +55,18 @@
     state: "{{ gitlab_package_state }}"
   environment:
     EXTERNAL_URL: "{{ gitlab_external_url }}"
+  failed_when: false
+
+- name: Validate Keycloak OAuth configuration
+  ansible.builtin.assert:
+    that:
+      - gitlab_oauth_keycloak_issuer | length > 0
+      - gitlab_oauth_keycloak_client_id | length > 0
+      - gitlab_oauth_keycloak_client_secret | length > 0
+    fail_msg: >-
+      Set gitlab_oauth_keycloak_issuer, gitlab_oauth_keycloak_client_id and
+      gitlab_oauth_keycloak_client_secret when gitlab_oauth_keycloak_enable is true.
+  when: gitlab_oauth_keycloak_enable | bool
 
 - name: Configure /etc/gitlab/gitlab.rb
   ansible.builtin.template:
@@ -63,13 +75,13 @@
     owner: root
     group: root
     mode: "0600"
-  notify:
-    - Gitlab reconfigure
-    - Restart gitlab
+#  notify:
+#    - Gitlab reconfigure
+#    - Restart gitlab
 
-- name: Ensure GitLab service is enabled and running
-  ansible.builtin.service:
-    name: "{{ gitlab_service_name }}"
-    enabled: true
-    state: started
-  when: gitlab_manage_service
+#- name: Ensure GitLab service is enabled and running
+#  ansible.builtin.service:
+#    name: "{{ gitlab_service_name }}"
+#    enabled: true
+#    state: started
+#  when: gitlab_manage_service#

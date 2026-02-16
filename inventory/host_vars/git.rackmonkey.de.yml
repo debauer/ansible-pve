@@ -3,15 +3,20 @@ dns_inwx_cname:
   - domain: rackmonkey.de
     records:
       - git
+      - registry
     type: CNAME
-    value: fw.rackmonkey.de
+    value: proxy.rackmonkey.de
+
 proxmox_vmid: 100
 
 #duummy data
 haproxy_services:
   - name: git.rackmonkey.de
-    IP: 10.63.10.2
+    IP: 10.63.13.11
     Port: 8000
+  - name: registry.rackmonkey.de
+    IP: 10.63.13.11
+    Port: 5000
 
 
 keycloak_clients:
@@ -34,3 +39,28 @@ keycloak_clients:
       - "https://git.rackmonkey.de/users/auth/openid_connect/callback"
     web_origins:
       - "https://git.rackmonkey.de"
+
+gitlab: true
+gitlab_domain: git.rackmonkey.de
+gitlab_registry_domain: registry.rackmonkey.de
+
+gitlab_registry_enable: true
+gitlab_registry_nginx_listen_port: 5050
+
+gitlab_nginx_listen_port: 8000
+gitlab_nginx_listen_https: false
+
+gitlab_oauth_keycloak_enable: true
+gitlab_oauth_keycloak_issuer: https://sso.rackmonkey.de/realms/rackmonkey
+gitlab_oauth_keycloak_client_id: gitlab
+
+gitlab_oauth_keycloak_client_secret: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63313962333433353931666337383262383961393538326334373039346234383564333830616335
+          3435333139663263386665363763323131313035343836310a326435303163333837346635353435
+          35626238313138303662373439636562636436333031343766333165613038323530363030653231
+          3235633839396361610a636538306531393463663032356231653465336166346635306131616139
+          65346462336331373763613964396466343366383863386236636463653362623235636332333736
+          6462303238616537353761376130656364643061653936376162
+
+gitlab_unprivileged_lxc: true
