@@ -1,58 +1,63 @@
 # ansible-pve
 
-Ansible playbooks and roles for a small homelab setup (Proxmox host, LXC guests,
-OpenWrt firewall, and supporting services like DNS and nginx).
+Ansible playbooks and roles for a Proxmox-based dedicated server setup in a datacenter.
 
-## Requirements
+## Setup
 
-- Ansible
-- Collections and roles in `requirements.yml`
-
-Install dependencies:
+### 1. Install Python dependencies with `uv`
 
 ```bash
-ansible-galaxy install -r requirements.yml -p roles --ignore-errors
+uv sync
 ```
 
-## Inventory layout
+Alternative: use `direnv` to automatically load the project environment when entering the repository.
 
-- `inventory/hosts.yml` defines host groups (`pve`, `lxc`, `openwrt`, `meta`).
-- `inventory/host_vars/` contains per-host settings.
-- `inventory/group_vars/all.yml` provides shared defaults.
-
-## Playbooks
-
-- `playbooks/base.yml`: Baseline setup for non-OpenWrt hosts (packages, users,
-  network config, updates).
-- `playbooks/pve.yml`: Proxmox host network setup.
-- `playbooks/fw.yml`: OpenWrt config render/deploy via the `wrt` role.
-- `playbooks/dns.yml`: INWX DNS sync (runs on localhost with secrets).
-
-Example run:
+### 2. Install Ansible Galaxy requirements
 
 ```bash
-ansible-playbook -i inventory/hosts.yml playbooks/base.yml
+uv run ansible-galaxy install -r requirements.yml -p roles --ignore-errors
 ```
 
-## Roles (high level)
+## Inventory Layout
 
-- `basic_motd`: MOTD + hostname setup.
-- `update`: System updates.
-- `packages`: Common packages.
-- `network_interfaces`: Interface configuration for non-OpenWrt hosts.
-- `basic/basic_ssh_port`: Resolves SSH host/port for internal-only Proxmox guests (`10000 + vmid` via proxy).
-- `user/*`: User management and shell config.
-- `wrt`: OpenWrt configuration templates.
-- `dns_inwx`: Sync DNS records in INWX.
-- `nginx_proxy`: Reverse proxy (package or docker).
-- `certbot`: TLS certificates (via geerlingguy.certbot).
+- `inventory/hosts.yml`: static inventory groups.
+- `inventory/pve.proxmox.yml`: dynamic Proxmox inventory plugin config.
+- `inventory/host_vars/`: per-host settings.
+- `inventory/group_vars/all/vars.yml`: shared defaults.
+- `inventory/group_vars/all/vars.vault.yml`: encrypted/shared secrets.
 
-## Secrets
+## Main Playbooks
 
-`playbooks/dns.yml` expects `vars/secrets.yml` to provide INWX credentials
-(`dns_inwx_user`, `dns_inwx_password`).
+- `playbooks/base.yml`: baseline host setup (basic, user, network, and app roles).
+- `playbooks/pve.yml`: Proxmox host configuration.
+- `playbooks/proxy.yml`: proxy stack deployment.
+- `playbooks/monitoring.yaml`: monitoring stack deployment.
+- `playbooks/dns.yml`: INWX DNS synchronization.
+- `playbooks/ssh_config.yml`: generates local SSH config at `~/.ssh/config.d/rackmonkey`.
+
+Example:
+
+```bash
+uv run ansible-playbook playbooks/base.yml
+```
+
+## Role Groups
+
+- `roles/basic/*`: base OS setup (`apt`, `packages`, `update`, `fail2ban`, SSH proxy handling).
+- `roles/user/*`: user accounts, hardening, shell, SSH keys.
+- `roles/network/*`: interfaces, DNS (INWX), HAProxy.
+- `roles/apps/*`: application roles (`postgres`, `keycloak`, `gitlab`).
+- `roles/monitoring/*`: monitoring server/client components (`prometheus`, `loki`, etc.).
+
+## Testing
+
+The `ssh_proxy_config` role has Molecule tests:
+
+```bash
+cd roles/basic/ssh_proxy_config
+uv run molecule test -s default
+```
 
 ## Notes
 
-- OpenWrt configs are rendered locally and copied to `/etc/config/` on the
-  firewall host. Check `roles/wrt/tasks/main.yml` to see which files are enabled.
+- SSH proxy resolution is executed through `playbooks/include/ssh.yml` and tagged `always`.
