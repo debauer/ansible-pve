@@ -1,0 +1,112 @@
+---
+- name: Validate admin credentials and target URL
+  ansible.builtin.assert:
+    that:
+      - keycloak_manage_auth_keycloak_url is match('^https?://')
+      - keycloak_manage_auth_password != "change-me"
+    fail_msg: Set keycloak_manage_auth_keycloak_url and keycloak_manage_auth_password.
+
+- name: Validate realm definitions
+  ansible.builtin.assert:
+    that:
+      - item.name is defined
+      - item.name | length > 0
+    fail_msg: Each item in keycloak_manage_realms requires a non-empty name.
+  loop: "{{ keycloak_manage_realms }}"
+
+- name: Initialize collected clients list
+  ansible.builtin.set_fact:
+    keycloak_manage_inventory_clients: []
+    keycloak_manage_excluded_hosts: []
+
+- name: Build excluded host list from excluded groups
+  ansible.builtin.set_fact:
+    keycloak_manage_excluded_hosts: "{{ (keycloak_manage_excluded_hosts + (groups[item] | default([]))) | unique }}"
+  loop: "{{ keycloak_manage_exclude_groups }}"
+
+- name: Collect Keycloak clients from hostvars
+  ansible.builtin.set_fact:
+    keycloak_manage_inventory_clients: >-
+      {{
+        keycloak_manage_inventory_clients
+        + (hostvars[item][keycloak_manage_host_client_var] | default([]))
+      }}
+  loop: "{{ groups[keycloak_manage_collect_from_group] | default([]) }}"
+  when:
+    - keycloak_manage_collect_clients_from_hosts | bool
+    - item not in keycloak_manage_excluded_hosts
+    - hostvars[item][keycloak_manage_host_client_var] is defined
+
+- name: Validate collected client definitions
+  ansible.builtin.assert:
+    that:
+      - item.realm is defined
+      - item.realm | length > 0
+      - item.client_id is defined
+      - item.client_id | length > 0
+    fail_msg: Each collected client in hostvars needs realm and client_id.
+  loop: "{{ keycloak_manage_inventory_clients }}"
+
+- name: Ensure Keycloak realms are present/absent
+  community.general.keycloak_realm:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ keycloak_manage_auth_keycloak_url }}"
+    auth_realm: "{{ keycloak_manage_auth_realm }}"
+    auth_username: "{{ keycloak_manage_auth_username }}"
+    auth_password: "{{ keycloak_manage_auth_password }}"
+    validate_certs: "{{ keycloak_manage_validate_certs }}"
+    realm: "{{ item.name }}"
+    enabled: "{{ item.enabled | default(true) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ keycloak_manage_realms }}"
+
+- name: Ensure realms from collected hostvar clients exist
+  community.general.keycloak_realm:
+    auth_keycloak_url: "{{ keycloak_manage_auth_keycloak_url }}"
+    auth_realm: "{{ keycloak_manage_auth_realm }}"
+    auth_username: "{{ keycloak_manage_auth_username }}"
+    auth_password: "{{ keycloak_manage_auth_password }}"
+    validate_certs: "{{ keycloak_manage_validate_certs }}"
+    realm: "{{ item }}"
+    enabled: true
+    state: present
+  loop: "{{ keycloak_manage_inventory_clients | map(attribute='realm') | unique | list }}"
+
+- name: Initialize realm/client pair list
+  ansible.builtin.set_fact:
+    keycloak_manage_realm_clients: []
+
+- name: Build realm/client pairs from role-local realm definitions
+  ansible.builtin.set_fact:
+    keycloak_manage_realm_clients: "{{ keycloak_manage_realm_clients | default([]) + [ {'realm': item.0.name, 'client': item.1 } ] }}"
+  loop: "{{ keycloak_manage_realms | subelements('clients', skip_missing=True) }}"
+
+- name: Add collected hostvar clients to realm/client pairs
+  ansible.builtin.set_fact:
+    keycloak_manage_realm_clients: "{{ (keycloak_manage_realm_clients | default([])) + [ {'realm': item.realm, 'client': item } ] }}"
+  loop: "{{ keycloak_manage_inventory_clients }}"
+
+- name: Ensure Keycloak clients are present/absent
+  community.general.keycloak_client:
+    auth_keycloak_url: "{{ keycloak_manage_auth_keycloak_url }}"
+    auth_realm: "{{ keycloak_manage_auth_realm }}"
+    auth_username: "{{ keycloak_manage_auth_username }}"
+    auth_password: "{{ keycloak_manage_auth_password }}"
+    validate_certs: "{{ keycloak_manage_validate_certs }}"
+    realm: "{{ item.realm }}"
+    client_id: "{{ item.client.client_id }}"
+    name: "{{ item.client.name | default(omit) }}"
+    enabled: "{{ item.client.enabled | default(true) }}"
+    state: "{{ item.client.state | default('present') }}"
+    public_client: "{{ item.client.public_client | default(omit) }}"
+    secret: "{{ item.client.secret | default(omit) }}"
+    root_url: "{{ item.client.root_url | default(omit) }}"
+    base_url: "{{ item.client.base_url | default(omit) }}"
+    admin_url: "{{ item.client.admin_url | default(omit) }}"
+    redirect_uris: "{{ item.client.redirect_uris | default(omit) }}"
+    web_origins: "{{ item.client.web_origins | default(omit) }}"
+    standard_flow_enabled: "{{ item.client.standard_flow_enabled | default(omit) }}"
+    direct_access_grants_enabled: "{{ item.client.direct_access_grants_enabled | default(omit) }}"
+    service_accounts_enabled: "{{ item.client.service_accounts_enabled | default(omit) }}"
+  loop: "{{ keycloak_manage_realm_clients | default([]) }}"
+  no_log: true

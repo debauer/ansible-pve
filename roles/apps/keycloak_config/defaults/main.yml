@@ -1,0 +1,35 @@
+---
+keycloak_manage_auth_keycloak_url: >-
+  {{
+    (keycloak_hostname | default('http://127.0.0.1:8080'))
+    if ((keycloak_hostname | default('')) is match('^https?://'))
+    else 'http://127.0.0.1:8080'
+  }}
+keycloak_manage_auth_realm: master
+keycloak_manage_auth_username: "{{ keycloak_admin_user | default('admin') }}"
+keycloak_manage_auth_password: "{{ keycloak_admin_password | default('change-me') }}"
+keycloak_manage_validate_certs: false
+
+# Collect client definitions from hostvars (for app-local config).
+keycloak_manage_collect_clients_from_hosts: true
+keycloak_manage_collect_from_group: all
+keycloak_manage_host_client_var: keycloak_clients
+keycloak_manage_exclude_groups:
+  - meta
+
+# Declarative configuration:
+# keycloak_manage_realms:
+#   - name: myrealm
+#     enabled: true
+#     state: present
+#     clients:
+#       - client_id: myapp
+#         state: present
+#         enabled: true
+#         public_client: false
+#         secret: "change-me"
+#         redirect_uris:
+#           - "https://app.example.com/*"
+#         web_origins:
+#           - "https://app.example.com"
+keycloak_manage_realms: []

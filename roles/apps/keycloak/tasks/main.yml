@@ -63,6 +63,7 @@
 - name: Check installed Keycloak version
   ansible.builtin.command: "{{ keycloak_install_dir }}/bin/kc.sh --version"
   register: keycloak_version_cmd
+  check_mode: false
   changed_when: false
   failed_when: false
 
@@ -75,6 +76,7 @@
       Accept: application/vnd.github+json
   register: keycloak_latest_release
   changed_when: false
+  check_mode: false
   when: keycloak_version == "latest"
 
 - name: Ensure latest Keycloak release metadata is available
@@ -123,7 +125,11 @@
         and keycloak_installed
         and (keycloak_installed_version != keycloak_target_version)
       }}
+
+- name: Decide if Keycloak install or upgrade is required
+  ansible.builtin.set_fact:
     keycloak_update_required: "{{ keycloak_install_required or keycloak_upgrade_required }}"
+
 
 - name: Show Keycloak version check
   ansible.builtin.debug:
